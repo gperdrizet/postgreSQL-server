@@ -1,0 +1,211 @@
+# postgresSQL-server
+
+A complete, production-ready PostgreSQL setup for educators, indie developers, and small teams who want a secure, monitored database server without enterprise costs.
+
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Grafana](https://img.shields.io/badge/Grafana-Monitoring-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+## Why this project?
+
+Cloud database services charge $15-50+/month for basic PostgreSQL. This project lets you run a **secure, monitored, production-grade database** on a $5/month VPS + your existing hardware.
+
+**Perfect for:**
+
+- **Educators** teaching SQL to students (isolated databases per student)
+- **Indie developers** needing a real database for side projects
+- **Small teams** wanting shared database access without cloud costs
+- **Homelab enthusiasts** self-hosting their infrastructure
+
+## Features
+
+| Feature | Description |
+| ------- | ----------- |
+| **Secure by default** | Tailscale tunnel, SSL/TLS, per-user isolation |
+| **Full monitoring** | Grafana dashboards, Prometheus metrics |
+| **Multi-tenant** | Individual + shared databases for collaboration |
+| **Vector search** | pgvector for embeddings and similarity search |
+| **Load tested** | Proven for 30+ concurrent users |
+| **Complete docs** | Setup guides, troubleshooting, maintenance |
+| **Admin tools** | Makefile commands, backup scripts |
+
+## Architecture
+
+```text
+┌─────────────────────┐         Tailscale Tunnel        ┌─────────────────────┐
+│   LOCAL MACHINE     │◄───────────────────────────────►│        VPS          │
+│      (pyrite)       │      (encrypted, persistent)    │   (gatekeeper)      │
+│  ┌───────────────┐  │                                 │  ┌───────────────┐  │
+│  │ Docker        │  │                                 │  │ NGINX Stream  │  │
+│  │ ├─ PostgreSQL │  │                                 │  │ (TCP Proxy)   │  │
+│  │ ├─ Prometheus │  │                                 │  │ :54321        │  │
+│  │ └─ Grafana    │  │                                 │  └───────────────┘  │
+│  └───────────────┘  │                                 │                     │
+│                     │                                 │ Public IP: x.x.x.x  │
+│Tailscale: 100.64.0.2│                                 │Tailscale: 100.64.0.1│
+└─────────────────────┘                                 └─────────────────────┘
+                                                                  ▲
+                                                        Students/clients
+                                                        connect here
+```
+
+## Quick start
+
+### Prerequisites
+
+- Docker and Docker Compose
+- A VPS with public IP ($5/month from DigitalOcean, Linode, Vultr, etc.)
+- Tailscale installed on both machines and joined to the same tailnet
+
+### 1. Clone and configure
+
+```bash
+git clone https://github.com/yourusername/postgresSQL-server.git
+cd postgresSQL-server
+
+# Generate secure passwords
+echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
+echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)" >> .env
+```
+
+### 2. Start the stack
+
+```bash
+docker compose up -d
+```
+
+### 3. Create student/user accounts
+
+```bash
+# Add usernames to students.txt
+echo -e "alice\nbob\ncharlie" > students.txt
+
+# Create accounts
+./scripts/create_students.sh
+```
+
+### 4. Connect
+
+```bash
+# Students connect via public endpoint
+psql "host=your-domain.com port=54321 dbname=alice_db user=alice sslmode=require"
+```
+
+See [SETUP.md](SETUP.md) for complete instructions including Tailscale and NGINX configuration.
+
+## Monitoring
+
+Access Grafana at `https://grafana.your-domain.com` (or `http://localhost:3000` locally).
+
+**Pre-configured dashboard shows:**
+
+- Active/idle connections
+- Transaction rates
+- Cache hit ratio
+- Database sizes
+- Query performance (via pg_stat_statements)
+
+## Admin commands
+
+```bash
+make help              # Show all commands
+make list-databases    # List all databases
+make list-users        # List all users
+make check-health      # PostgreSQL health check
+make db-size           # Show database sizes
+make shell DB=mydb     # Open psql shell
+make backup-all        # Backup all databases
+```
+
+## Start on boot
+
+The Compose services already use `restart: unless-stopped`, and you can also install a systemd unit to guarantee the project stack is brought up on host boot.
+
+```bash
+# Install and enable boot startup
+make enable-startup-on-boot
+
+# Verify service status
+systemctl is-enabled postgressql-server-stack.service
+systemctl is-active postgressql-server-stack.service
+
+# Remove boot startup
+make disable-startup-on-boot
+```
+
+## Load testing
+
+Verify your setup can handle your expected load:
+
+```bash
+# Initialize test data
+source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh init
+
+# Test with 20 concurrent users
+source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh multi 20 4 60
+```
+
+## Project structure
+
+```text
+postgresSQL-server/
+├── docker-compose.yml        # PostgreSQL + monitoring stack
+├── Makefile                  # Admin commands
+├── SETUP.md                  # Complete setup guide
+├── config/
+│   ├── postgresql.conf       # Database configuration
+│   ├── pg_hba.conf           # Authentication rules
+│   ├── prometheus.yml        # Metrics collection
+│   └── grafana/              # Dashboard provisioning
+├── scripts/
+│   ├── create_students.sh    # User/database creation
+│   ├── loadtest.sh           # Performance testing
+│   └── backup.sh             # Automated backups
+└── docs/
+    └── architecture.md       # Detailed architecture diagrams
+```
+
+## Documentation
+
+| Document | Description |
+| -------- | ----------- |
+| [SETUP.md](SETUP.md) | Complete setup instructions |
+| [docs/architecture.md](docs/architecture.md) | Architecture diagrams |
+
+## Performance
+
+Tested configuration (modest home server):
+
+| Metric | Single user | 20 concurrent users |
+| ------ | ----------- | ------------------- |
+| TPS | 258 | 1,661 |
+| Latency | 3.9ms | 12ms |
+| Failures | 0% | 0% |
+
+## Security
+
+- **Network**: Tailscale encrypted tunnel (no direct database exposure)
+- **Transport**: SSL/TLS for all connections
+- **Authentication**: Strong passwords, per-user databases
+- **Isolation**: Students can only access their own database + shared projects
+- **Monitoring**: Connection logging, query tracking
+
+## Contributing
+
+Contributions welcome! Please read the existing documentation and open an issue before submitting PRs.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Acknowledgments
+
+Built with:
+
+- [PostgreSQL](https://www.postgresql.org/) - The database
+- [pgvector](https://github.com/pgvector/pgvector) - Vector similarity search extension
+- [Tailscale](https://tailscale.com/) - VPN mesh network
+- [Grafana](https://grafana.com/) - Monitoring dashboards
+- [Prometheus](https://prometheus.io/) - Metrics collection
+- [Docker](https://www.docker.com/) - Containerization

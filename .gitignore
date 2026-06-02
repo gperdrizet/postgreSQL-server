@@ -1,0 +1,16 @@
+# Environment and secrets
+.env
+credentials/
+
+# SSL certificates and private keys
+config/ssl/
+
+# PostgreSQL data
+data/
+
+# Private documentation (contains specific infrastructure details)
+STORAGE.md
+RAID_RECOVERY.md
+
+# Logs
+*.log
