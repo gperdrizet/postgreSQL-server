@@ -14,9 +14,9 @@ A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tail
   - [Step 3: Start PostgreSQL](#step-3-start-postgresql)
   - [Step 4: Configure NGINX on VPS](#step-4-configure-nginx-on-vps)
   - [Step 5: Create student accounts](#step-5-create-student-accounts)
-  - [Step 5b: Create shared database (optional)](#step-5b-create-shared-database-optional)
-  - [Step 6: Set up backups](#step-6-set-up-backups)
-  - [Step 7: Test connection](#step-7-test-student-connection)
+  - [Step 6: Create shared database (optional)](#step-6-create-shared-database-optional)
+  - [Step 7: Set up backups](#step-7-set-up-backups)
+  - [Step 8: Test connection](#step-8-test-student-connection)
 - [Student connection guide](#student-connection-guide)
   - [Connection details](#connection-details)
   - [Connection string format](#connection-string-format)
@@ -55,14 +55,14 @@ A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tail
 ```text
 ┌─────────────────────┐         Tailscale Tunnel        ┌─────────────────────┐
 │   LOCAL MACHINE     │◄───────────────────────────────►│         VPS         │
-│      (pyrite)       │      (encrypted, persistent)    │   (gatekeeper)      │
+│                     │      (encrypted, persistent)    │                     │
 │  ┌───────────────┐  │                                 │  ┌───────────────┐  │
 │  │ Docker        │  │                                 │  │ NGINX Stream  │  │
 │  │ PostgreSQL    │  │                                 │  │ (TCP Proxy)   │  │
 │  │ :5432 (SSL)   │  │                                 │  │ :54321        │  │
 │  └───────────────┘  │                                 │  └───────────────┘  │
 │                     │                                 │                     │
-│Tailscale: 100.64.0.2│                                 │Tailscale: 100.64.0.1│
+│ Tailscale: <local>  │                                 │  Tailscale: <vps>   │
 └─────────────────────┘                                 └─────────────────────┘
                                                                   ▲
                                                                   │
@@ -85,16 +85,14 @@ A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tail
 
 ```text
 postgresSQL-server/
-├── SETUP.md                      # This file
 ├── docker-compose.yml            # PostgreSQL + monitoring stack
 ├── .env                          # Admin credentials (git-ignored)
 ├── .gitignore
-├── students.txt                  # Student usernames, one per line
 ├── config/
 │   ├── postgresql.conf           # PostgreSQL server configuration
 │   ├── pg_hba.conf               # Client authentication rules
 │   ├── prometheus.yml            # Prometheus scrape configuration
-│   ├── ssl/                      # SSL certificates
+│   ├── ssl/                      # SSL certificates (git-ignored)
 │   └── grafana/
 │       ├── provisioning/
 │       │   ├── datasources/      # Auto-configured Prometheus datasource
@@ -103,14 +101,20 @@ postgresSQL-server/
 ├── init/
 │   └── 00-init.sql               # Runs on first container start
 ├── scripts/
-│   ├── create_students.sh        # Create student accounts from students.txt
+│   ├── create_students.sh        # Create student accounts from credentials/students.txt
 │   ├── backup.sh                 # Daily backup script
 │   ├── setup-backup-cron.sh      # Install backup cron job
 │   ├── loadtest.sh               # Load testing with pgbench
 │   └── custom_loadtest.sql       # Custom load test SQL script
 ├── vps/
-│   └── nginx-stream.conf         # NGINX stream config (reference)
+│   └── nginx-stream.conf         # NGINX stream config for the VPS
+├── docs/
+│   ├── index.md                  # Documentation site home
+│   ├── setup.md                  # This file
+│   ├── architecture.md           # Architecture diagrams
+│   └── blog-post.md              # Blog post about the project
 ├── credentials/                  # Generated student credentials (git-ignored)
+│   ├── students.txt              # Student usernames, one per line
 │   └── student_credentials.csv
 └── data/                         # PostgreSQL data directory (git-ignored)
     └── postgres/
@@ -127,17 +131,12 @@ postgresSQL-server/
 
 ### Step 1: Configure environment
 
-Create a `.env` file in the project root with your admin password:
+Create a `.env` file in the project root:
 
 ```bash
-# .env
-POSTGRES_ADMIN_PASSWORD=your_secure_password_here
-```
-
-Replace `your_secure_password_here` with a strong password. You can generate one with:
-
-```bash
-openssl rand -base64 32
+# Generate both required passwords
+echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
+echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)" >> .env
 ```
 
 ### Step 2: Set up Tailscale
@@ -165,8 +164,8 @@ Both the local machine and VPS must be joined to the same Tailscale network (tai
    Both machines should show as active, e.g.:
 
    ```
-   100.64.0.1  gatekeeper  <account>  linux  active
-   100.64.0.2  pyrite      <account>  linux  active
+   100.64.0.x  <vps>           <account>  linux  active
+   100.64.0.y  <local-machine> <account>  linux  active
    ```
 
 4. Open the PostgreSQL proxy port on the VPS firewall:
@@ -175,10 +174,10 @@ Both the local machine and VPS must be joined to the same Tailscale network (tai
    sudo ufw allow 54321/tcp
    ```
 
-5. Test connectivity from pyrite to gatekeeper:
+5. Test connectivity from the local machine to the VPS:
 
    ```bash
-   ping 100.64.0.1
+   ping <vps-tailscale-ip>
    ```
 
 > **Note:** Tailscale uses the `100.64.0.0/10` CGNAT range. All traffic between tailnet peers is encrypted end-to-end. No manual key exchange or inter-peer firewall rules are needed.
@@ -236,7 +235,7 @@ Both the local machine and VPS must be joined to the same Tailscale network (tai
 
 ### Step 5: Create student accounts
 
-1. Create a `students.txt` file with one username per line:
+1. Create a `credentials/students.txt` file with one username per line:
 
    ```text
    jsmith
@@ -261,7 +260,7 @@ Both the local machine and VPS must be joined to the same Tailscale network (tai
 
 4. Credentials will be saved to `credentials/student_credentials.csv`
 
-### Step 5b: Create shared database (optional)
+### Step 6: Create shared database (optional)
 
 If students need a collaborative database they can all access:
 
@@ -308,7 +307,7 @@ If students need a collaborative database they can all access:
 
 **Note:** New students created via `create_students.sh` are automatically added to the `students` role.
 
-### Step 6: Set up backups
+### Step 7: Set up backups
 
 1. Edit `scripts/backup.sh` and update `BACKUP_DIR` to your HDD RAID path
 
@@ -324,7 +323,7 @@ If students need a collaborative database they can all access:
    ./scripts/setup-backup-cron.sh
    ```
 
-### Step 7: Test student connection
+### Step 8: Test student connection
 
 From any external machine:
 
@@ -420,12 +419,17 @@ docker exec -it student-postgres psql -U admin -c "ALTER USER student01 WITH PAS
 
 ### Add new student
 
+The preferred method is adding the username to `credentials/students.txt` and re-running `./scripts/create_students.sh` — it is idempotent and handles role membership automatically.
+
+To add a single student manually:
+
 ```bash
 docker exec -it student-postgres psql -U admin <<EOF
-CREATE USER student31 WITH PASSWORD 'secure_password' CONNECTION LIMIT 3;
-CREATE DATABASE student31_db OWNER student31;
-REVOKE ALL ON DATABASE student31_db FROM PUBLIC;
-GRANT CONNECT ON DATABASE student31_db TO student31;
+CREATE USER newuser WITH PASSWORD 'secure_password' CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE DATABASE newuser_db OWNER newuser;
+REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;
+GRANT CONNECT ON DATABASE newuser_db TO newuser;
+GRANT students TO newuser;
 EOF
 ```
 
@@ -651,8 +655,8 @@ PGPASSWORD=secret ./scripts/loadtest.sh custom scripts/custom_loadtest.sql 15 60
 - Each student is limited to 3 concurrent connections
 - Query timeout is set to 30 seconds
 - Students can only access their own database
-- WireGuard tunnel encrypts traffic between local machine and VPS
-- Note: SSL is not used at the PostgreSQL level since the WireGuard tunnel provides encryption
+- Tailscale encrypts all traffic between the local machine and the VPS using WireGuard under the hood
+- SSL/TLS is enforced at the PostgreSQL level — all connections must use `sslmode=require`; this means traffic is double-encrypted end-to-end from client to database
 
 ## Security hardening (optional)
 
@@ -774,14 +778,14 @@ psql "host=your-domain.com port=54321 dbname=jsmith_db user=jsmith"
 # Check if NGINX is listening on the port
 sudo ss -tlnp | grep 54321
 
-# Check if WireGuard tunnel is up
-sudo wg show
+# Check Tailscale status and peer connectivity
+tailscale status
 
-# Test connection to PostgreSQL through tunnel
-nc -zv 10.0.0.2 5432
+# Test connection to PostgreSQL through Tailscale
+nc -zv <local-tailscale-ip> 5432
 
-# Test PostgreSQL directly through tunnel
-PGPASSWORD=password psql -h 10.0.0.2 -p 5432 -U username -d database_name
+# Test PostgreSQL directly through Tailscale
+PGPASSWORD=password psql -h <local-tailscale-ip> -p 5432 -U username -d database_name
 
 # Check NGINX stream logs
 sudo tail -20 /var/log/nginx/stream_error.log
@@ -823,43 +827,36 @@ docker exec -it student-postgres psql -U admin -d postgres
 
 #### Symptom: Server closed connection unexpectedly
 
-1. Check NGINX stream error log: `ssh your-vps "sudo tail -20 /var/log/nginx/stream_error.log"`
-2. Test tunnel connectivity from VPS: `ssh your-vps "nc -zv 10.0.0.2 5432"`
+1. Check NGINX stream error log: `ssh <your-vps> "sudo tail -20 /var/log/nginx/stream_error.log"`
+2. Test Tailscale connectivity from VPS: `ssh <your-vps> "nc -zv <local-tailscale-ip> 5432"`
 3. Check PostgreSQL logs: `docker logs student-postgres 2>&1 | tail -30`
-4. Verify pg_hba.conf allows connections from WireGuard network (10.0.0.0/24)
+4. Verify pg_hba.conf allows connections from Tailscale network (`100.64.0.0/10`)
 
-### WireGuard tunnel not working
+### Tailscale connectivity issues
 
-1. Check tunnel status on both ends:
+1. Check that both machines are active on the tailnet:
 
    ```bash
-   # On local machine
-   sudo wg show
-   
-   # On VPS
-   ssh your-vps "sudo wg show"
+   # On either machine
+   tailscale status
    ```
 
-2. Verify keys match:
-   - Local machine's public key should be in VPS config under `[Peer]`
-   - VPS public key should be in local config under `[Peer]`
+   Both the local machine and VPS should show as active with their respective Tailscale IPs.
 
-3. Check WireGuard service:
+2. Test direct connectivity:
 
    ```bash
-   sudo systemctl status wg-quick@wg0
+   # From the local machine
+   ping <vps-tailscale-ip>
+
+   # From the VPS
+   ssh <your-vps> "ping -c 3 <local-tailscale-ip>"
    ```
 
-4. Restart WireGuard:
+3. Re-authenticate if a machine shows offline:
 
    ```bash
-   sudo systemctl restart wg-quick@wg0
-   ```
-
-5. Check firewall allows WireGuard (UDP 51820):
-
-   ```bash
-   ssh your-vps "sudo ufw status | grep 51820"
+   sudo tailscale up
    ```
 
 ### NGINX stream not working
@@ -886,7 +883,7 @@ docker exec -it student-postgres psql -U admin -d postgres
 
 ### PostgreSQL authentication errors
 
-1. Check pg_hba.conf has correct entries for WireGuard network
+1. Check pg_hba.conf has correct entries for the Tailscale network (`100.64.0.0/10`)
 2. Verify username and password are correct
 3. Check if user exists:
 
@@ -902,19 +899,11 @@ docker exec -it student-postgres psql -U admin -d postgres
 
 ---
 
-## Advanced: Enabling PostgreSQL SSL (optional)
+## SSL certificate setup
 
-The current setup uses WireGuard to encrypt traffic between the VPS and local machine. If you need end-to-end SSL encryption (client → VPS → PostgreSQL), follow these steps.
+SSL is already enabled in this stack — `pg_hba.conf` uses `hostssl` for all remote connections and the certificates are mounted into the PostgreSQL container. This section documents how the certificates are generated so they can be regenerated if needed.
 
-### Why you might want this
-
-- Regulatory requirements mandating database-level encryption
-- Defense in depth (multiple encryption layers)
-- Clients connecting from untrusted networks to the VPS
-
-### Step 1: Generate SSL certificates
-
-On the local machine, create a directory for certs and generate them:
+### Generate certificates
 
 ```bash
 mkdir -p ./config/ssl
@@ -926,78 +915,28 @@ openssl req -new -x509 -days 3650 -nodes \
   -keyout server.key \
   -subj "/CN=postgres"
 
-# Set proper permissions
+# Set permissions — PostgreSQL requires the key owned by UID 70 (postgres in alpine)
 chmod 600 server.key
 chmod 644 server.crt
-
-# PostgreSQL requires the key to be owned by the postgres user (UID 70 in alpine)
 sudo chown 70:70 server.key
 ```
 
-### Step 2: Update docker-compose.yml
-
-Add the SSL certificate volume:
-
-```yaml
-services:
-  postgres:
-    # ... existing config ...
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-      - ./init:/docker-entrypoint-initdb.d:ro
-      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-      - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
-      - ./config/ssl/server.crt:/var/lib/postgresql/server.crt:ro
-      - ./config/ssl/server.key:/var/lib/postgresql/server.key:ro
-```
-
-### Step 3: Update postgresql.conf
-
-Add these lines to `config/postgresql.conf`:
-
-```ini
-# SSL configuration
-ssl = on
-ssl_cert_file = '/var/lib/postgresql/server.crt'
-ssl_key_file = '/var/lib/postgresql/server.key'
-```
-
-### Step 4: Update pg_hba.conf
-
-Change connections to require SSL by using `hostssl` instead of `host`:
-
-```text
-# Require SSL for all remote connections
-hostssl all             all             0.0.0.0/0               scram-sha-256
-```
-
-### Step 5: Restart PostgreSQL
+The certificates live in `config/ssl/` which is excluded from git. After regenerating, restart the container:
 
 ```bash
-docker compose down
-docker compose up -d
+docker compose restart postgres
 ```
 
-### Step 6: Update NGINX to passthrough (no SSL termination)
+### Stricter client verification
 
-The NGINX stream config remains the same (TCP passthrough). PostgreSQL handles the SSL handshake directly.
-
-### Step 7: Connect with SSL
+By default students connect with `sslmode=require`, which encrypts but doesn't verify the server certificate. To enforce certificate verification:
 
 ```bash
-psql "host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=require"
-```
-
-For stricter verification (recommended for production):
-
-```bash
-# Copy server.crt to client machine, then:
+# Copy server.crt to the client machine, then:
 psql "host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=verify-ca sslrootcert=/path/to/server.crt"
 ```
 
-### Client connection examples with SSL
-
-**Python (psycopg2):**
+**Python:**
 
 ```python
 conn = psycopg2.connect(
@@ -1010,7 +949,7 @@ conn = psycopg2.connect(
 )
 ```
 
-**Node.js (pg):**
+**Node.js:**
 
 ```javascript
 const pool = new Pool({
@@ -1019,12 +958,6 @@ const pool = new Pool({
   database: 'student01_db',
   user: 'student01',
   password: 'YOUR_PASSWORD',
-  ssl: { rejectUnauthorized: false }  // or provide ca cert for verification
+  ssl: { rejectUnauthorized: false }  // set to true and provide ca if using verify-ca
 });
 ```
-
-### Notes
-
-- Self-signed certificates will show warnings; use `sslmode=require` to accept them
-- For production, consider using certificates from a trusted CA
-- The WireGuard tunnel still encrypts VPS ↔ local traffic, so this adds client ↔ VPS encryption

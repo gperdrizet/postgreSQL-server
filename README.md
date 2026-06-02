@@ -35,7 +35,7 @@ Cloud database services charge $15-50+/month for basic PostgreSQL. This project 
 ```text
 ┌─────────────────────┐         Tailscale Tunnel        ┌─────────────────────┐
 │   LOCAL MACHINE     │◄───────────────────────────────►│        VPS          │
-│      (pyrite)       │      (encrypted, persistent)    │   (gatekeeper)      │
+│                     │      (encrypted, persistent)    │                     │
 │  ┌───────────────┐  │                                 │  ┌───────────────┐  │
 │  │ Docker        │  │                                 │  │ NGINX Stream  │  │
 │  │ ├─ PostgreSQL │  │                                 │  │ (TCP Proxy)   │  │
@@ -43,7 +43,7 @@ Cloud database services charge $15-50+/month for basic PostgreSQL. This project 
 │  │ └─ Grafana    │  │                                 │  └───────────────┘  │
 │  └───────────────┘  │                                 │                     │
 │                     │                                 │ Public IP: x.x.x.x  │
-│Tailscale: 100.64.0.2│                                 │Tailscale: 100.64.0.1│
+│ Tailscale: <local>  │                                 │  Tailscale: <vps>   │
 └─────────────────────┘                                 └─────────────────────┘
                                                                   ▲
                                                         Students/clients
@@ -69,34 +69,52 @@ echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
 echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)" >> .env
 ```
 
-### 2. Start the stack
+### 2. Generate SSL certificates
+
+```bash
+mkdir -p config/ssl && cd config/ssl
+openssl req -new -x509 -days 3650 -nodes \
+  -out server.crt -keyout server.key -subj "/CN=postgres"
+chmod 600 server.key && sudo chown 70:70 server.key
+cd ../..
+```
+
+### 3. Start the stack
 
 ```bash
 docker compose up -d
 ```
 
-### 3. Create student/user accounts
+### 4. Configure NGINX on the VPS
+
+Copy `vps/nginx-stream.conf` into `/etc/nginx/nginx.conf` on the VPS (outside the `http {}` block) and reload:
 
 ```bash
-# Add usernames to students.txt
-echo -e "alice\nbob\ncharlie" > students.txt
+ssh <your-vps> "sudo nginx -t && sudo systemctl reload nginx"
+```
+
+### 5. Create student/user accounts
+
+```bash
+# Add usernames to credentials/students.txt
+echo -e "alice\nbob\ncharlie" > credentials/students.txt
 
 # Create accounts
 ./scripts/create_students.sh
 ```
 
-### 4. Connect
+### 6. Connect
 
 ```bash
 # Students connect via public endpoint
 psql "host=your-domain.com port=54321 dbname=alice_db user=alice sslmode=require"
 ```
 
-See [SETUP.md](SETUP.md) for complete instructions including Tailscale and NGINX configuration.
+See [Setup guide](docs/setup.md) for complete instructions including Tailscale and NGINX configuration.
 
 ## Monitoring
 
-Access Grafana at `https://grafana.your-domain.com` (or `http://localhost:3000` locally).
+Access Grafana at `http://localhost:3000` (login: `admin` / value of `GRAFANA_ADMIN_PASSWORD`).
 
 **Pre-configured dashboard shows:**
 
@@ -127,8 +145,8 @@ The Compose services already use `restart: unless-stopped`, and you can also ins
 make enable-startup-on-boot
 
 # Verify service status
-systemctl is-enabled postgressql-server-stack.service
-systemctl is-active postgressql-server-stack.service
+systemctl is-enabled postgresql-server-stack.service
+systemctl is-active postgresql-server-stack.service
 
 # Remove boot startup
 make disable-startup-on-boot
@@ -152,26 +170,33 @@ source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh multi
 postgresSQL-server/
 ├── docker-compose.yml        # PostgreSQL + monitoring stack
 ├── Makefile                  # Admin commands
-├── SETUP.md                  # Complete setup guide
+├── mkdocs.yml                # Documentation site config
 ├── config/
 │   ├── postgresql.conf       # Database configuration
 │   ├── pg_hba.conf           # Authentication rules
 │   ├── prometheus.yml        # Metrics collection
+│   ├── ssl/                  # SSL certificates (git-ignored)
 │   └── grafana/              # Dashboard provisioning
 ├── scripts/
 │   ├── create_students.sh    # User/database creation
 │   ├── loadtest.sh           # Performance testing
 │   └── backup.sh             # Automated backups
+├── vps/
+│   └── nginx-stream.conf     # NGINX stream config for the VPS
 └── docs/
-    └── architecture.md       # Detailed architecture diagrams
+    ├── index.md              # Documentation site home
+    ├── setup.md              # Complete setup guide
+    ├── architecture.md       # Architecture diagrams
+    └── blog-post.md          # Blog post about the project
 ```
 
 ## Documentation
 
 | Document | Description |
 | -------- | ----------- |
-| [SETUP.md](SETUP.md) | Complete setup instructions |
+| [docs/setup.md](docs/setup.md) | Complete setup instructions |
 | [docs/architecture.md](docs/architecture.md) | Architecture diagrams |
+| [docs/blog-post.md](docs/blog-post.md) | Project write-up |
 
 ## Performance
 
