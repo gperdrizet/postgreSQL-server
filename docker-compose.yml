@@ -79,6 +79,25 @@ services:
     depends_on:
       - prometheus
 
+  # DB admin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pyrite.lan
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_LISTEN_PORT: 80
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "100.64.0.2:8088:80"
+    networks:
+      - postgres-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 networks:
   postgres-net:
     driver: bridge
@@ -86,3 +105,4 @@ networks:
 volumes:
   prometheus-data:
   grafana-data:
+  pgadmin-data:
