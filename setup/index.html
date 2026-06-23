@@ -1,0 +1,2764 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://gperdrizet.github.io/posgreSQL-server/setup/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Setup guide - PostgreSQL Server</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#postgresql-database-setup-for-students" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="PostgreSQL Server" class="md-header__button md-logo" aria-label="PostgreSQL Server" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            PostgreSQL Server
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Setup guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gperdrizet/posgreSQL-server" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    gperdrizet/posgreSQL-server
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="PostgreSQL Server" class="md-nav__button md-logo" aria-label="PostgreSQL Server" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    PostgreSQL Server
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gperdrizet/posgreSQL-server" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    gperdrizet/posgreSQL-server
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup instructions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-configure-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Configure environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-set-up-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Set up Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-start-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Start PostgreSQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-configure-nginx-on-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Configure NGINX on VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-create-student-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Create student accounts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-create-shared-database-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Create shared database (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-set-up-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Set up backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-test-student-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Test student connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#student-connection-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Student connection guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Student connection guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-string-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection string format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-psql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using psql
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-python-psycopg2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Python (psycopg2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-nodejs-pg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Node.js (pg)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        View logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore from backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset-student-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset student password
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-new-student" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add new student
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting-the-monitoring-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Starting the monitoring stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing Grafana
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-configured-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-configured dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pgvector-vector-similarity-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pgvector — vector similarity search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-statistics-with-pg_stat_statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query statistics with pg_stat_statements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Load testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Load testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set-up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-load-test-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the load test script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpreting-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpreting results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-during-load-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring during load tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-load-test-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom load test scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-hardening-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security hardening (optional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security hardening (optional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fail2ban-for-postgresql-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail2ban for PostgreSQL connections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nginx-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NGINX rate limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-diagnostic-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick diagnostic commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cannot-connect-to-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cannot connect to database
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cannot connect to database">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#symptom-connection-timed-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symptom: Connection timed out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symptom-connection-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symptom: Connection refused
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symptom-server-closed-connection-unexpectedly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symptom: Server closed connection unexpectedly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailscale-connectivity-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailscale connectivity issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nginx-stream-not-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NGINX stream not working
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-authentication-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgreSQL authentication errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssl-certificate-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSL certificate setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SSL certificate setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stricter-client-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stricter client verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blog-post/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Blog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup instructions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-configure-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Configure environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-set-up-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Set up Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-start-postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Start PostgreSQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-configure-nginx-on-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Configure NGINX on VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-create-student-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Create student accounts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-create-shared-database-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Create shared database (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-set-up-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Set up backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-8-test-student-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 8: Test student connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#student-connection-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Student connection guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Student connection guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-string-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection string format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-psql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using psql
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-python-psycopg2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Python (psycopg2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-nodejs-pg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Node.js (pg)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maintenance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        View logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restart-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restart database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-from-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore from backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset-student-password" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset student password
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-new-student" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add new student
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting-the-monitoring-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Starting the monitoring stack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessing-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing Grafana
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pre-configured-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-configured dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pgvector-vector-similarity-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pgvector — vector similarity search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-statistics-with-pg_stat_statements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query statistics with pg_stat_statements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Load testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Load testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set-up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-load-test-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the load test script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpreting-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpreting results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitoring-during-load-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring during load tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-load-test-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom load test scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-hardening-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security hardening (optional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security hardening (optional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fail2ban-for-postgresql-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail2ban for PostgreSQL connections
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nginx-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NGINX rate limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-diagnostic-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick diagnostic commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cannot-connect-to-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cannot connect to database
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cannot connect to database">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#symptom-connection-timed-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symptom: Connection timed out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symptom-connection-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symptom: Connection refused
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symptom-server-closed-connection-unexpectedly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Symptom: Server closed connection unexpectedly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailscale-connectivity-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailscale connectivity issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nginx-stream-not-working" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NGINX stream not working
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#postgresql-authentication-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgreSQL authentication errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssl-certificate-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSL certificate setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SSL certificate setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generate certificates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stricter-client-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stricter client verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="postgresql-database-setup-for-students">PostgreSQL database setup for students<a class="headerlink" href="#postgresql-database-setup-for-students" title="Permanent link">&para;</a></h1>
+<p>A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tailscale and NGINX stream proxy.</p>
+<h2 id="table-of-contents">Table of contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#architecture-overview">Architecture overview</a></li>
+<li><a href="#components">Components</a></li>
+<li><a href="#directory-structure">Directory structure</a></li>
+<li><a href="#setup-instructions">Setup instructions</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#step-1-configure-environment">Step 1: Configure environment</a></li>
+<li><a href="#step-2-set-up-tailscale">Step 2: Set up Tailscale</a></li>
+<li><a href="#step-3-start-postgresql">Step 3: Start PostgreSQL</a></li>
+<li><a href="#step-4-configure-nginx-on-vps">Step 4: Configure NGINX on VPS</a></li>
+<li><a href="#step-5-create-student-accounts">Step 5: Create student accounts</a></li>
+<li><a href="#step-6-create-shared-database-optional">Step 6: Create shared database (optional)</a></li>
+<li><a href="#step-7-set-up-backups">Step 7: Set up backups</a></li>
+<li><a href="#step-8-test-student-connection">Step 8: Test connection</a></li>
+<li><a href="#student-connection-guide">Student connection guide</a></li>
+<li><a href="#connection-details">Connection details</a></li>
+<li><a href="#connection-string-format">Connection string format</a></li>
+<li><a href="#using-psql">Using psql</a></li>
+<li><a href="#using-python-psycopg2">Using Python (psycopg2)</a></li>
+<li><a href="#using-nodejs-pg">Using Node.js (pg)</a></li>
+<li><a href="#maintenance">Maintenance</a></li>
+<li><a href="#view-logs">View logs</a></li>
+<li><a href="#restart-database">Restart database</a></li>
+<li><a href="#manual-backup">Manual backup</a></li>
+<li><a href="#restore-from-backup">Restore from backup</a></li>
+<li><a href="#reset-student-password">Reset student password</a></li>
+<li><a href="#add-new-student">Add new student</a></li>
+<li><a href="#monitoring">Monitoring</a></li>
+<li><a href="#services">Services</a></li>
+<li><a href="#starting-the-monitoring-stack">Starting the monitoring stack</a></li>
+<li><a href="#accessing-grafana">Accessing Grafana</a></li>
+<li><a href="#pre-configured-dashboard">Pre-configured dashboard</a></li>
+<li><a href="#query-statistics-with-pg_stat_statements">Query statistics with pg_stat_statements</a></li>
+<li><a href="#load-testing">Load testing</a></li>
+<li><a href="#set-up">Set-up</a></li>
+<li><a href="#using-the-load-test-script">Using the load test script</a></li>
+<li><a href="#test-types">Test types</a></li>
+<li><a href="#interpreting-results">Interpreting results</a></li>
+<li><a href="#monitoring-during-load-tests">Monitoring during load tests</a></li>
+<li><a href="#custom-load-test-scripts">Custom load test scripts</a></li>
+<li><a href="#security-notes">Security notes</a></li>
+<li><a href="#security-hardening-optional">Security hardening (optional)</a></li>
+<li><a href="#fail2ban-for-postgresql-connections">Fail2ban for PostgreSQL connections</a></li>
+<li><a href="#nginx-rate-limiting">NGINX rate limiting</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#quick-diagnostic-commands">Quick diagnostic commands</a></li>
+</ul>
+<h2 id="architecture-overview">Architecture overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────┐         Tailscale Tunnel        ┌─────────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│   LOCAL MACHINE     │◄───────────────────────────────►│         VPS         │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│                     │      (encrypted, persistent)    │                     │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│  ┌───────────────┐  │                                 │  ┌───────────────┐  │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│  │ Docker        │  │                                 │  │ NGINX Stream  │  │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│  │ PostgreSQL    │  │                                 │  │ (TCP Proxy)   │  │
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│  │ :5432 (SSL)   │  │                                 │  │ :54321        │  │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│  └───────────────┘  │                                 │  └───────────────┘  │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│                     │                                 │                     │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│ Tailscale: &lt;local&gt;  │                                 │  Tailscale: &lt;vps&gt;   │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>└─────────────────────┘                                 └─────────────────────┘
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                                                  ▲
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                                                                  │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                                                  │ TLS encrypted
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                                                                  │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                                          Students connect
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                                          your-domain:54321
+</code></pre></div>
+<h2 id="components">Components<a class="headerlink" href="#components" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Location</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL 16</td>
+<td>Local (Docker)</td>
+<td>Database server</td>
+</tr>
+<tr>
+<td>Tailscale</td>
+<td>Local ↔ VPS</td>
+<td>Encrypted tunnel</td>
+</tr>
+<tr>
+<td>NGINX Stream</td>
+<td>VPS</td>
+<td>TCP/SSL proxy</td>
+</tr>
+<tr>
+<td>Backup Scripts</td>
+<td>Local</td>
+<td>Automated backups to HDD RAID</td>
+</tr>
+</tbody>
+</table>
+<h2 id="directory-structure">Directory structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>postgresSQL-server/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── docker-compose.yml            # PostgreSQL + monitoring stack
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── .env                          # Admin credentials (git-ignored)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── .gitignore
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── config/
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   ├── postgresql.conf           # PostgreSQL server configuration
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   ├── pg_hba.conf               # Client authentication rules
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   ├── prometheus.yml            # Prometheus scrape configuration
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   ├── ssl/                      # SSL certificates (git-ignored)
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   └── grafana/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│       ├── provisioning/
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│       │   ├── datasources/      # Auto-configured Prometheus datasource
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│       │   └── dashboards/       # Dashboard provisioning config
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│       └── dashboards/           # Pre-built dashboard JSON files
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>├── init/
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   └── 00-init.sql               # Runs on first container start
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>├── scripts/
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── create_students.sh        # Create student accounts from credentials/students.txt
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   ├── backup.sh                 # Daily backup script
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   ├── setup-backup-cron.sh      # Install backup cron job
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│   ├── loadtest.sh               # Load testing with pgbench
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│   └── custom_loadtest.sql       # Custom load test SQL script
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>├── vps/
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   └── nginx-stream.conf         # NGINX stream config for the VPS
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>├── docs/
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│   ├── index.md                  # Documentation site home
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>│   ├── setup.md                  # This file
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>│   ├── architecture.md           # Architecture diagrams
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>│   └── blog-post.md              # Blog post about the project
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>├── credentials/                  # Generated student credentials (git-ignored)
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>│   ├── students.txt              # Student usernames, one per line
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>│   └── student_credentials.csv
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>└── data/                         # PostgreSQL data directory (git-ignored)
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>    └── postgres/
+</code></pre></div>
+<h2 id="setup-instructions">Setup instructions<a class="headerlink" href="#setup-instructions" title="Permanent link">&para;</a></h2>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Docker and Docker Compose installed locally</li>
+<li>Tailscale installed on both local machine and VPS, both joined to the same tailnet</li>
+<li>NGINX with stream module on VPS</li>
+<li>SSH access to VPS</li>
+</ul>
+<h3 id="step-1-configure-environment">Step 1: Configure environment<a class="headerlink" href="#step-1-configure-environment" title="Permanent link">&para;</a></h3>
+<p>Create a <code>.env</code> file in the project root:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Generate both required passwords</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;POSTGRES_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>.env
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;GRAFANA_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.env
+</code></pre></div>
+<h3 id="step-2-set-up-tailscale">Step 2: Set up Tailscale<a class="headerlink" href="#step-2-set-up-tailscale" title="Permanent link">&para;</a></h3>
+<p>Both the local machine and VPS must be joined to the same Tailscale network (tailnet). The VPS acts as the headnode.</p>
+<ol>
+<li>Install Tailscale on each machine if not already installed:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://tailscale.com/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+</code></pre></div>
+<ol>
+<li>Authenticate each machine to your tailnet:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up
+</code></pre></div>
+<ol>
+<li>Verify both machines are visible to each other:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>tailscale<span class="w"> </span>status
+</code></pre></div>
+<p>Both machines should show as active, e.g.:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>100.64.0.x  &lt;vps&gt;           &lt;account&gt;  linux  active
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>100.64.0.y  &lt;local-machine&gt; &lt;account&gt;  linux  active
+</code></pre></div>
+<ol>
+<li>Open the PostgreSQL proxy port on the VPS firewall:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">54321</span>/tcp
+</code></pre></div>
+<ol>
+<li>Test connectivity from the local machine to the VPS:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ping<span class="w"> </span>&lt;vps-tailscale-ip&gt;
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> Tailscale uses the <code>100.64.0.0/10</code> CGNAT range. All traffic between tailnet peers is encrypted end-to-end. No manual key exchange or inter-peer firewall rules are needed.</p>
+</blockquote>
+<h3 id="step-3-start-postgresql">Step 3: Start PostgreSQL<a class="headerlink" href="#step-3-start-postgresql" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Start the container:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<ol>
+<li>Verify it's running:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>ps
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>docker<span class="w"> </span>logs<span class="w"> </span>student-postgres
+</code></pre></div>
+<ol>
+<li>Test local connection:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+</code></pre></div>
+<h3 id="step-4-configure-nginx-on-vps">Step 4: Configure NGINX on VPS<a class="headerlink" href="#step-4-configure-nginx-on-vps" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Check if stream module is available:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>nginx<span class="w"> </span>-V<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>stream
+</code></pre></div>
+<ol>
+<li>If not available, install nginx-full:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx-full
+</code></pre></div>
+<ol>
+<li>Edit <code>/etc/nginx/nginx.conf</code> and add the stream block from <code>vps/nginx-stream.conf</code></li>
+<li>Add OUTSIDE the <code>http {}</code> block</li>
+<li>
+<p>Update SSL certificate paths to match your setup</p>
+</li>
+<li>
+<p>Test configuration:</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-t
+</code></pre></div>
+<ol>
+<li>Reload NGINX:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
+</code></pre></div>
+<h3 id="step-5-create-student-accounts">Step 5: Create student accounts<a class="headerlink" href="#step-5-create-student-accounts" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create a <code>credentials/students.txt</code> file with one username per line:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>jsmith
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>mgarcia
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>kwilson
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a># Lines starting with # are ignored
+</code></pre></div>
+<p>Usernames should be lowercase with no spaces (letters, numbers, underscores only).</p>
+<ol>
+<li>Make scripts executable:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>scripts/*.sh
+</code></pre></div>
+<ol>
+<li>Run the student creation script:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>./scripts/create_students.sh
+</code></pre></div>
+<ol>
+<li>Credentials will be saved to <code>credentials/student_credentials.csv</code></li>
+</ol>
+<h3 id="step-6-create-shared-database-optional">Step 6: Create shared database (optional)<a class="headerlink" href="#step-6-create-shared-database-optional" title="Permanent link">&para;</a></h3>
+<p>If students need a collaborative database they can all access:</p>
+<ol>
+<li>Connect as admin and create the database:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nb">source</span><span class="w"> </span>.env
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nv">PGPASSWORD</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$POSTGRES_ADMIN_PASSWORD</span><span class="s2">&quot;</span><span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+</code></pre></div>
+<ol>
+<li>Run the following SQL (replace <code>your_database_name</code> with your desired name):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1">-- Create the shared database</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">your_database_name</span><span class="p">;</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1">-- Connect to it</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="err">\</span><span class="k">c</span><span class="w"> </span><span class="n">your_database_name</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="c1">-- Create a shared role for students</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="c1">-- Grant schema permissions</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="c1">-- Default privileges: students can use each other&#39;s tables</span>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">    </span><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">TABLES</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span>
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a><span class="w">    </span><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">SEQUENCES</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="c1">-- Add existing students to the role (repeat for each student)</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="k">GRANT</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">jsmith</span><span class="p">,</span><span class="w"> </span><span class="n">mgarcia</span><span class="p">,</span><span class="w"> </span><span class="n">kwilson</span><span class="p">,</span><span class="w"> </span><span class="n">alee</span><span class="p">;</span>
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>
+<a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a><span class="c1">-- Allow students to connect</span>
+<a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">CONNECT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">your_database_name</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
+</code></pre></div>
+<ol>
+<li>Students can now connect:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=your_database_name user=jsmith sslmode=require&quot;</span>
+</code></pre></div>
+<p><strong>Note:</strong> New students created via <code>create_students.sh</code> are automatically added to the <code>students</code> role.</p>
+<h3 id="step-7-set-up-backups">Step 7: Set up backups<a class="headerlink" href="#step-7-set-up-backups" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Edit <code>scripts/backup.sh</code> and update <code>BACKUP_DIR</code> to your HDD RAID path</p>
+</li>
+<li>
+<p>Test backup:</p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>./scripts/backup.sh
+</code></pre></div>
+<ol>
+<li>Install cron job:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>./scripts/setup-backup-cron.sh
+</code></pre></div>
+<h3 id="step-8-test-student-connection">Step 8: Test student connection<a class="headerlink" href="#step-8-test-student-connection" title="Permanent link">&para;</a></h3>
+<p>From any external machine:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require&quot;</span>
+</code></pre></div>
+<h2 id="student-connection-guide">Student connection guide<a class="headerlink" href="#student-connection-guide" title="Permanent link">&para;</a></h2>
+<h3 id="connection-details">Connection details<a class="headerlink" href="#connection-details" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td><code>your-domain.com</code></td>
+</tr>
+<tr>
+<td>Port</td>
+<td><code>54321</code></td>
+</tr>
+<tr>
+<td>Database</td>
+<td><code>studentXX_db</code> (your assigned database)</td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code>studentXX</code> (your assigned username)</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>(provided separately)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="connection-string-format">Connection string format<a class="headerlink" href="#connection-string-format" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>postgresql://studentXX:PASSWORD@your-domain.com:54321/studentXX_db?sslmode<span class="o">=</span>require
+</code></pre></div>
+<h3 id="using-psql">Using psql<a class="headerlink" href="#using-psql" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require&quot;</span>
+</code></pre></div>
+<h3 id="using-python-psycopg2">Using Python (psycopg2)<a class="headerlink" href="#using-python-psycopg2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;your-domain.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;student01_db&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;student01&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;YOUR_PASSWORD&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">&quot;require&quot;</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="using-nodejs-pg">Using Node.js (pg)<a class="headerlink" href="#using-nodejs-pg" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Pool</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;pg&#39;</span><span class="p">);</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;your-domain.com&#39;</span><span class="p">,</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01_db&#39;</span><span class="p">,</span>
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01&#39;</span><span class="p">,</span>
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;YOUR_PASSWORD&#39;</span><span class="p">,</span>
+<a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="p">});</span>
+</code></pre></div>
+<h2 id="maintenance">Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
+<h3 id="view-logs">View logs<a class="headerlink" href="#view-logs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>student-postgres
+</code></pre></div>
+<h3 id="restart-database">Restart database<a class="headerlink" href="#restart-database" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart
+</code></pre></div>
+<h3 id="manual-backup">Manual backup<a class="headerlink" href="#manual-backup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>./scripts/backup.sh
+</code></pre></div>
+<h3 id="restore-from-backup">Restore from backup<a class="headerlink" href="#restore-from-backup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>gunzip<span class="w"> </span>-c<span class="w"> </span>/path/to/backup.sql.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin
+</code></pre></div>
+<h3 id="reset-student-password">Reset student password<a class="headerlink" href="#reset-student-password" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;ALTER USER student01 WITH PASSWORD &#39;new_password&#39;;&quot;</span>
+</code></pre></div>
+<h3 id="add-new-student">Add new student<a class="headerlink" href="#add-new-student" title="Permanent link">&para;</a></h3>
+<p>The preferred method is adding the username to <code>credentials/students.txt</code> and re-running <code>./scripts/create_students.sh</code> — it is idempotent and handles role membership automatically.</p>
+<p>To add a single student manually:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="s">CREATE USER newuser WITH PASSWORD &#39;secure_password&#39; CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;</span>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="s">CREATE DATABASE newuser_db OWNER newuser;</span>
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="s">REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;</span>
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="s">GRANT CONNECT ON DATABASE newuser_db TO newuser;</span>
+<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="s">GRANT students TO newuser;</span>
+<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="s">EOF</span>
+</code></pre></div>
+<h2 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h2>
+<p>The stack includes a full monitoring solution with Prometheus, Grafana, and pg_stat_statements.</p>
+<h3 id="services">Services<a class="headerlink" href="#services" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>URL</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grafana</td>
+<td><a href="http://localhost:3000">http://localhost:3000</a></td>
+<td>Dashboards and visualization</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td><a href="http://localhost:9090">http://localhost:9090</a></td>
+<td>Metrics collection and storage</td>
+</tr>
+<tr>
+<td>postgres_exporter</td>
+<td><a href="http://localhost:9187">http://localhost:9187</a></td>
+<td>PostgreSQL metrics exporter</td>
+</tr>
+</tbody>
+</table>
+<h3 id="starting-the-monitoring-stack">Starting the monitoring stack<a class="headerlink" href="#starting-the-monitoring-stack" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+<p>All monitoring services start automatically with PostgreSQL.</p>
+<h3 id="accessing-grafana">Accessing Grafana<a class="headerlink" href="#accessing-grafana" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open <a href="http://localhost:3000">http://localhost:3000</a></li>
+<li>Login with:</li>
+<li>Username: <code>admin</code></li>
+<li>Password: Value of <code>GRAFANA_ADMIN_PASSWORD</code> from <code>.env</code> (default: <code>admin</code>)</li>
+<li>The PostgreSQL Overview dashboard is pre-configured</li>
+</ol>
+<h3 id="pre-configured-dashboard">Pre-configured dashboard<a class="headerlink" href="#pre-configured-dashboard" title="Permanent link">&para;</a></h3>
+<p>The PostgreSQL Overview dashboard shows:</p>
+<ul>
+<li>Active and idle connections</li>
+<li>Cache hit ratio</li>
+<li>Database size</li>
+<li>Connections over time</li>
+<li>Row operations rate (inserts, updates, deletes, fetches)</li>
+<li>Transaction rate (commits vs rollbacks)</li>
+<li>Locks by mode</li>
+</ul>
+<h3 id="pgvector-vector-similarity-search">pgvector — vector similarity search<a class="headerlink" href="#pgvector-vector-similarity-search" title="Permanent link">&para;</a></h3>
+<p>The <code>vector</code> extension (pgvector 0.8.x) is pre-installed via the <code>pgvector/pgvector:pg16</code> image and enabled automatically in the <code>postgres</code> database on first start.</p>
+<p><strong>Enable in any database:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">vector</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>Basic usage:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1">-- Create a table with a vector column (e.g. 1536-dim OpenAI embeddings)</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="w">    </span><span class="n">content</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="w">    </span><span class="n">embedding</span><span class="w"> </span><span class="n">vector</span><span class="p">(</span><span class="mi">1536</span><span class="p">)</span>
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="p">);</span>
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="c1">-- Insert a vector</span>
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">embedding</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;[0.1, 0.2, ...]&#39;</span><span class="p">);</span>
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="c1">-- Nearest-neighbour search (cosine distance)</span>
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">content</span>
+<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="k">FROM</span><span class="w"> </span><span class="n">documents</span>
+<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="s1">&#39;[0.1, 0.2, ...]&#39;</span>
+<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a>
+<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a><span class="c1">-- Create an index for fast ANN search</span>
+<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">hnsw</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="n">vector_cosine_ops</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Distance operators:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Metric</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;-&gt;</code></td>
+<td>L2 (Euclidean) distance</td>
+</tr>
+<tr>
+<td><code>&lt;#&gt;</code></td>
+<td>Negative inner product</td>
+</tr>
+<tr>
+<td><code>&lt;=&gt;</code></td>
+<td>Cosine distance</td>
+</tr>
+<tr>
+<td><code>&lt;+&gt;</code></td>
+<td>L1 (taxicab) distance</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="https://github.com/pgvector/pgvector">pgvector documentation</a> for full index options (<code>ivfflat</code>, <code>hnsw</code>) and query tuning.</p>
+<h3 id="query-statistics-with-pg_stat_statements">Query statistics with pg_stat_statements<a class="headerlink" href="#query-statistics-with-pg_stat_statements" title="Permanent link">&para;</a></h3>
+<p>Query-level statistics are available via the <code>pg_stat_statements</code> extension:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1">-- Top 10 slowest queries by total time</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="k">SELECT</span><span class="w"> </span>
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="w">    </span><span class="k">substring</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_preview</span><span class="p">,</span>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="w">    </span><span class="n">calls</span><span class="p">,</span>
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">total_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total_ms</span><span class="p">,</span>
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_ms</span><span class="p">,</span>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="w">    </span><span class="k">rows</span>
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_exec_time</span><span class="w"> </span><span class="k">DESC</span>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a><span class="c1">-- Most frequently called queries</span>
+<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a><span class="k">SELECT</span><span class="w"> </span>
+<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a><span class="w">    </span><span class="k">substring</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_preview</span><span class="p">,</span>
+<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a><span class="w">    </span><span class="n">calls</span><span class="p">,</span>
+<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_ms</span>
+<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
+<a id="__codelineno-38-18" name="__codelineno-38-18" href="#__codelineno-38-18"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="k">DESC</span>
+<a id="__codelineno-38-19" name="__codelineno-38-19" href="#__codelineno-38-19"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-38-20" name="__codelineno-38-20" href="#__codelineno-38-20"></a>
+<a id="__codelineno-38-21" name="__codelineno-38-21" href="#__codelineno-38-21"></a><span class="c1">-- Reset statistics</span>
+<a id="__codelineno-38-22" name="__codelineno-38-22" href="#__codelineno-38-22"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="load-testing">Load testing<a class="headerlink" href="#load-testing" title="Permanent link">&para;</a></h2>
+<p>Load testing is done with <code>pgbench</code>, PostgreSQL's built-in benchmarking tool.</p>
+<h3 id="set-up">Set-up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h3>
+<p>Install pgbench locally:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>postgresql-contrib
+</code></pre></div>
+<p>Or run tests inside the container:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>pgbench<span class="w"> </span>...
+</code></pre></div>
+<h3 id="using-the-load-test-script">Using the load test script<a class="headerlink" href="#using-the-load-test-script" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Initialize test tables (required before first test)</span>
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>init
+<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>
+<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="c1"># Single user hammering the server (60 seconds)</span>
+<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>single
+<a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a>
+<a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a><span class="c1"># Multiple users (20 clients, 4 threads, 60 seconds)</span>
+<a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>multi
+<a id="__codelineno-41-9" name="__codelineno-41-9" href="#__codelineno-41-9"></a>
+<a id="__codelineno-41-10" name="__codelineno-41-10" href="#__codelineno-41-10"></a><span class="c1"># Stress test (50 clients, 8 threads, 120 seconds)</span>
+<a id="__codelineno-41-11" name="__codelineno-41-11" href="#__codelineno-41-11"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>stress
+<a id="__codelineno-41-12" name="__codelineno-41-12" href="#__codelineno-41-12"></a>
+<a id="__codelineno-41-13" name="__codelineno-41-13" href="#__codelineno-41-13"></a><span class="c1"># Read-only test (SELECT queries only)</span>
+<a id="__codelineno-41-14" name="__codelineno-41-14" href="#__codelineno-41-14"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span><span class="nb">readonly</span>
+<a id="__codelineno-41-15" name="__codelineno-41-15" href="#__codelineno-41-15"></a>
+<a id="__codelineno-41-16" name="__codelineno-41-16" href="#__codelineno-41-16"></a><span class="c1"># Custom duration/parameters</span>
+<a id="__codelineno-41-17" name="__codelineno-41-17" href="#__codelineno-41-17"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>multi<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">90</span>
+<a id="__codelineno-41-18" name="__codelineno-41-18" href="#__codelineno-41-18"></a>
+<a id="__codelineno-41-19" name="__codelineno-41-19" href="#__codelineno-41-19"></a><span class="c1"># Clean up test tables when done</span>
+<a id="__codelineno-41-20" name="__codelineno-41-20" href="#__codelineno-41-20"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>cleanup
+</code></pre></div>
+<h3 id="test-types">Test types<a class="headerlink" href="#test-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Clients</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>single</code></td>
+<td>1</td>
+<td>One user making continuous requests</td>
+</tr>
+<tr>
+<td><code>multi</code></td>
+<td>20</td>
+<td>Simulate typical class usage</td>
+</tr>
+<tr>
+<td><code>stress</code></td>
+<td>50</td>
+<td>Push server to limits</td>
+</tr>
+<tr>
+<td><code>readonly</code></td>
+<td>30</td>
+<td>SELECT-only workload</td>
+</tr>
+<tr>
+<td><code>custom</code></td>
+<td>varies</td>
+<td>Run your own SQL script</td>
+</tr>
+</tbody>
+</table>
+<h3 id="interpreting-results">Interpreting results<a class="headerlink" href="#interpreting-results" title="Permanent link">&para;</a></h3>
+<p>pgbench outputs:</p>
+<ul>
+<li><strong>TPS (transactions per second)</strong>: Higher is better</li>
+<li><strong>Latency</strong>: Average time per transaction (lower is better)</li>
+<li><strong>stddev</strong>: Consistency of response times</li>
+</ul>
+<p>Example output:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>pgbench (PostgreSQL 16.1)
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>transaction type: &lt;builtin: TPC-B (sort of)&gt;
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>scaling factor: 10
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>number of clients: 20
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>number of threads: 4
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>maximum number of tries: 1
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>duration: 60 s
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>number of transactions actually processed: 45231
+<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>number of failed transactions: 0 (0.000%)
+<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>latency average = 26.521 ms
+<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a>latency stddev = 18.432 ms
+<a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a>initial connection time = 89.234 ms
+<a id="__codelineno-42-13" name="__codelineno-42-13" href="#__codelineno-42-13"></a>tps = 754.012345 (without initial connection time)
+</code></pre></div>
+<h3 id="monitoring-during-load-tests">Monitoring during load tests<a class="headerlink" href="#monitoring-during-load-tests" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Open Grafana (<a href="http://localhost:3000">http://localhost:3000</a>) before starting a test</li>
+<li>Watch the PostgreSQL Overview dashboard in real-time</li>
+<li>You'll see connections spike, transaction rates increase, and can identify bottlenecks</li>
+</ol>
+<h3 id="custom-load-test-scripts">Custom load test scripts<a class="headerlink" href="#custom-load-test-scripts" title="Permanent link">&para;</a></h3>
+<p>Create custom scenarios in <code>scripts/custom_loadtest.sql</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="c1">-- Example: Simulate student workload</span>
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="err">\</span><span class="k">set</span><span class="w"> </span><span class="n">student_id</span><span class="w"> </span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span>
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="err">\</span><span class="k">set</span><span class="w"> </span><span class="n">assignment_id</span><span class="w"> </span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">assignments</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">assignment_id</span><span class="p">;</span>
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="k">UPDATE</span><span class="w"> </span><span class="n">submissions</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">updated_at</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NOW</span><span class="p">()</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">student_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">student_id</span><span class="p">;</span>
+</code></pre></div>
+<p>Run with:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>secret<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>custom<span class="w"> </span>scripts/custom_loadtest.sql<span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="m">60</span>
+</code></pre></div>
+<h2 id="security-notes">Security notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Each student is limited to 3 concurrent connections</li>
+<li>Query timeout is set to 30 seconds</li>
+<li>Students can only access their own database</li>
+<li>Tailscale encrypts all traffic between the local machine and the VPS using WireGuard under the hood</li>
+<li>SSL/TLS is enforced at the PostgreSQL level — all connections must use <code>sslmode=require</code>; this means traffic is double-encrypted end-to-end from client to database</li>
+</ul>
+<h2 id="security-hardening-optional">Security hardening (optional)<a class="headerlink" href="#security-hardening-optional" title="Permanent link">&para;</a></h2>
+<p>These additional measures protect against brute-force attacks and connection flooding.</p>
+<h3 id="fail2ban-for-postgresql-connections">Fail2ban for PostgreSQL connections<a class="headerlink" href="#fail2ban-for-postgresql-connections" title="Permanent link">&para;</a></h3>
+<p>Fail2ban automatically bans IPs that have too many failed connection attempts.</p>
+<p><strong>1. Create the filter</strong> (on VPS):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/fail2ban/filter.d/nginx-stream.conf<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="s">[Definition]</span>
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="s">failregex = ^&lt;HOST&gt; \[.*\] TCP 502</span>
+<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="s">            ^&lt;HOST&gt; \[.*\] TCP 500</span>
+<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a><span class="s">ignoreregex =</span>
+<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="s">EOF</span>
+</code></pre></div>
+<p><strong>2. Add the jail</strong> (on VPS):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fail2ban/jail.local<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="s">[nginx-stream]</span>
+<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="s">enabled = true</span>
+<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a><span class="s">port = 54321</span>
+<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="s">filter = nginx-stream</span>
+<a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a><span class="s">logpath = /var/log/nginx/stream_access.log</span>
+<a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a><span class="s">maxretry = 10</span>
+<a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a><span class="s">bantime = 3600</span>
+<a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a><span class="s">findtime = 600</span>
+<a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a><span class="s">EOF</span>
+</code></pre></div>
+<p><strong>3. Restart fail2ban:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>fail2ban
+</code></pre></div>
+<p><strong>4. Verify the jail is active:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status
+</code></pre></div>
+<p>You should see <code>nginx-stream</code> in the jail list.</p>
+<p><strong>Useful fail2ban commands:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="c1"># Check status of PostgreSQL jail</span>
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status<span class="w"> </span>nginx-stream
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a><span class="c1"># Unban an IP</span>
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span><span class="nb">set</span><span class="w"> </span>nginx-stream<span class="w"> </span>unbanip<span class="w"> </span><span class="m">1</span>.2.3.4
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="c1"># View banned IPs</span>
+<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>get<span class="w"> </span>nginx-stream<span class="w"> </span>banip
+</code></pre></div>
+<h3 id="nginx-rate-limiting">NGINX rate limiting<a class="headerlink" href="#nginx-rate-limiting" title="Permanent link">&para;</a></h3>
+<p>Rate limiting prevents any single IP from opening too many connections.</p>
+<p>The NGINX stream config (<code>vps/nginx-stream.conf</code>) includes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="k">stream</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="w">    </span><span class="c1"># Track connections per IP (10MB zone = ~160,000 IPs)</span>
+<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="w">    </span><span class="kn">limit_conn_zone</span><span class="w"> </span><span class="nv">$binary_remote_addr</span><span class="w"> </span><span class="s">zone=postgres_conn:10m</span><span class="p">;</span>
+<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a>
+<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a><span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a><span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">54321</span><span class="p">;</span>
+<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">postgresql_backend</span><span class="p">;</span>
+<a id="__codelineno-50-8" name="__codelineno-50-8" href="#__codelineno-50-8"></a>
+<a id="__codelineno-50-9" name="__codelineno-50-9" href="#__codelineno-50-9"></a><span class="w">        </span><span class="c1"># Timeout settings</span>
+<a id="__codelineno-50-10" name="__codelineno-50-10" href="#__codelineno-50-10"></a><span class="w">        </span><span class="kn">proxy_timeout</span><span class="w"> </span><span class="s">600s</span><span class="p">;</span><span class="w">           </span><span class="c1"># Allow long-running queries (10 min)</span>
+<a id="__codelineno-50-11" name="__codelineno-50-11" href="#__codelineno-50-11"></a><span class="w">        </span><span class="kn">proxy_connect_timeout</span><span class="w"> </span><span class="s">30s</span><span class="p">;</span><span class="w">    </span><span class="c1"># Connection establishment timeout</span>
+<a id="__codelineno-50-12" name="__codelineno-50-12" href="#__codelineno-50-12"></a>
+<a id="__codelineno-50-13" name="__codelineno-50-13" href="#__codelineno-50-13"></a><span class="w">        </span><span class="c1"># Buffer settings for better throughput</span>
+<a id="__codelineno-50-14" name="__codelineno-50-14" href="#__codelineno-50-14"></a><span class="w">        </span><span class="kn">proxy_buffer_size</span><span class="w"> </span><span class="mi">16k</span><span class="p">;</span>
+<a id="__codelineno-50-15" name="__codelineno-50-15" href="#__codelineno-50-15"></a>
+<a id="__codelineno-50-16" name="__codelineno-50-16" href="#__codelineno-50-16"></a><span class="w">        </span><span class="c1"># Limit to 5 concurrent connections per IP</span>
+<a id="__codelineno-50-17" name="__codelineno-50-17" href="#__codelineno-50-17"></a><span class="w">        </span><span class="kn">limit_conn</span><span class="w"> </span><span class="s">postgres_conn</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<a id="__codelineno-50-18" name="__codelineno-50-18" href="#__codelineno-50-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-50-19" name="__codelineno-50-19" href="#__codelineno-50-19"></a><span class="p">}</span>
+</code></pre></div>
+<p>This limits each IP address to 5 concurrent connections. Since each student is limited to 3 database connections, this provides headroom while preventing any single user from monopolizing server resources. The extended timeouts (600s) allow for long-running student queries.</p>
+<p>To apply rate limiting, update the stream block in <code>/etc/nginx/nginx.conf</code> on the VPS and reload:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
+</code></pre></div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="quick-diagnostic-commands">Quick diagnostic commands<a class="headerlink" href="#quick-diagnostic-commands" title="Permanent link">&para;</a></h3>
+<p>Run these commands to quickly identify where a connection issue is occurring:</p>
+<p><strong>From your client machine:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># Test if port is reachable</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>nc<span class="w"> </span>-zv<span class="w"> </span>your-domain.com<span class="w"> </span><span class="m">54321</span>
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Test PostgreSQL connection</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=jsmith_db user=jsmith&quot;</span>
+</code></pre></div>
+<p><strong>On the VPS:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Check if NGINX is listening on the port</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">54321</span>
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="c1"># Check Tailscale status and peer connectivity</span>
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>tailscale<span class="w"> </span>status
+<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a>
+<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a><span class="c1"># Test connection to PostgreSQL through Tailscale</span>
+<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a>nc<span class="w"> </span>-zv<span class="w"> </span>&lt;local-tailscale-ip&gt;<span class="w"> </span><span class="m">5432</span>
+<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>
+<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a><span class="c1"># Test PostgreSQL directly through Tailscale</span>
+<a id="__codelineno-53-11" name="__codelineno-53-11" href="#__codelineno-53-11"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>password<span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>&lt;local-tailscale-ip&gt;<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span><span class="w"> </span>-U<span class="w"> </span>username<span class="w"> </span>-d<span class="w"> </span>database_name
+<a id="__codelineno-53-12" name="__codelineno-53-12" href="#__codelineno-53-12"></a>
+<a id="__codelineno-53-13" name="__codelineno-53-13" href="#__codelineno-53-13"></a><span class="c1"># Check NGINX stream logs</span>
+<a id="__codelineno-53-14" name="__codelineno-53-14" href="#__codelineno-53-14"></a>sudo<span class="w"> </span>tail<span class="w"> </span>-20<span class="w"> </span>/var/log/nginx/stream_error.log
+<a id="__codelineno-53-15" name="__codelineno-53-15" href="#__codelineno-53-15"></a>
+<a id="__codelineno-53-16" name="__codelineno-53-16" href="#__codelineno-53-16"></a><span class="c1"># Verify stream block is loaded in NGINX config</span>
+<a id="__codelineno-53-17" name="__codelineno-53-17" href="#__codelineno-53-17"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s1">&#39;stream {&#39;</span>
+<a id="__codelineno-53-18" name="__codelineno-53-18" href="#__codelineno-53-18"></a>
+<a id="__codelineno-53-19" name="__codelineno-53-19" href="#__codelineno-53-19"></a><span class="c1"># Check firewall status</span>
+<a id="__codelineno-53-20" name="__codelineno-53-20" href="#__codelineno-53-20"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
+</code></pre></div>
+<p><strong>On the local machine (PostgreSQL host):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="c1"># Check if PostgreSQL container is running</span>
+<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>ps
+<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>
+<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="c1"># Check PostgreSQL logs</span>
+<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>docker<span class="w"> </span>logs<span class="w"> </span>student-postgres<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-30
+<a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>
+<a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a><span class="c1"># Test local PostgreSQL connection</span>
+<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+</code></pre></div>
+<h3 id="cannot-connect-to-database">Cannot connect to database<a class="headerlink" href="#cannot-connect-to-database" title="Permanent link">&para;</a></h3>
+<h4 id="symptom-connection-timed-out">Symptom: Connection timed out<a class="headerlink" href="#symptom-connection-timed-out" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Check if port is open on VPS: <code>ssh your-vps "sudo ss -tlnp | grep 54321"</code></li>
+<li>Check VPS firewall: <code>ssh your-vps "sudo ufw status | grep 54321"</code></li>
+<li>Check hosting provider firewall (web panel) - many providers have separate firewalls</li>
+<li>Test port reachability: <code>nc -zv your-domain.com 54321</code></li>
+</ol>
+<h4 id="symptom-connection-refused">Symptom: Connection refused<a class="headerlink" href="#symptom-connection-refused" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Check NGINX is running: <code>ssh your-vps "sudo systemctl status nginx"</code></li>
+<li>Verify stream block is in nginx.conf: <code>ssh your-vps "sudo nginx -T | grep -A3 'stream {'"</code></li>
+<li>Check NGINX config syntax: <code>ssh your-vps "sudo nginx -t"</code></li>
+</ol>
+<h4 id="symptom-server-closed-connection-unexpectedly">Symptom: Server closed connection unexpectedly<a class="headerlink" href="#symptom-server-closed-connection-unexpectedly" title="Permanent link">&para;</a></h4>
+<ol>
+<li>Check NGINX stream error log: <code>ssh &lt;your-vps&gt; "sudo tail -20 /var/log/nginx/stream_error.log"</code></li>
+<li>Test Tailscale connectivity from VPS: <code>ssh &lt;your-vps&gt; "nc -zv &lt;local-tailscale-ip&gt; 5432"</code></li>
+<li>Check PostgreSQL logs: <code>docker logs student-postgres 2&gt;&amp;1 | tail -30</code></li>
+<li>Verify pg_hba.conf allows connections from Tailscale network (<code>100.64.0.0/10</code>)</li>
+</ol>
+<h3 id="tailscale-connectivity-issues">Tailscale connectivity issues<a class="headerlink" href="#tailscale-connectivity-issues" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Check that both machines are active on the tailnet:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="c1"># On either machine</span>
+<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>tailscale<span class="w"> </span>status
+</code></pre></div>
+<p>Both the local machine and VPS should show as active with their respective Tailscale IPs.</p>
+<ol>
+<li>Test direct connectivity:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="c1"># From the local machine</span>
+<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>ping<span class="w"> </span>&lt;vps-tailscale-ip&gt;
+<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a>
+<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a><span class="c1"># From the VPS</span>
+<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>ssh<span class="w"> </span>&lt;your-vps&gt;<span class="w"> </span><span class="s2">&quot;ping -c 3 &lt;local-tailscale-ip&gt;&quot;</span>
+</code></pre></div>
+<ol>
+<li>Re-authenticate if a machine shows offline:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up
+</code></pre></div>
+<h3 id="nginx-stream-not-working">NGINX stream not working<a class="headerlink" href="#nginx-stream-not-working" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Verify stream module is available:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>nginx<span class="w"> </span>-V<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>stream
+</code></pre></div>
+<p>If not present, install nginx-full:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx-full
+</code></pre></div>
+<ol>
+<li>
+<p>Check config syntax: <code>sudo nginx -t</code></p>
+</li>
+<li>
+<p>Ensure stream block is OUTSIDE http block in <code>/etc/nginx/nginx.conf</code></p>
+</li>
+<li>
+<p>Check if port is listening: <code>sudo ss -tlnp | grep 54321</code></p>
+</li>
+<li>
+<p>View stream access log: <code>sudo tail -f /var/log/nginx/stream_access.log</code></p>
+</li>
+</ol>
+<h3 id="postgresql-authentication-errors">PostgreSQL authentication errors<a class="headerlink" href="#postgresql-authentication-errors" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Check pg_hba.conf has correct entries for the Tailscale network (<code>100.64.0.0/10</code>)</li>
+<li>Verify username and password are correct</li>
+<li>Check if user exists:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\\du&quot;</span>
+</code></pre></div>
+<ol>
+<li>Check if database exists:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\\l&quot;</span>
+</code></pre></div>
+<hr />
+<h2 id="ssl-certificate-setup">SSL certificate setup<a class="headerlink" href="#ssl-certificate-setup" title="Permanent link">&para;</a></h2>
+<p>SSL is already enabled in this stack — <code>pg_hba.conf</code> uses <code>hostssl</code> for all remote connections and the certificates are mounted into the PostgreSQL container. This section documents how the certificates are generated so they can be regenerated if needed.</p>
+<h3 id="generate-certificates">Generate certificates<a class="headerlink" href="#generate-certificates" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>./config/ssl
+<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a><span class="nb">cd</span><span class="w"> </span>./config/ssl
+<a id="__codelineno-62-3" name="__codelineno-62-3" href="#__codelineno-62-3"></a>
+<a id="__codelineno-62-4" name="__codelineno-62-4" href="#__codelineno-62-4"></a><span class="c1"># Generate a self-signed certificate (valid for 10 years)</span>
+<a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-days<span class="w"> </span><span class="m">3650</span><span class="w"> </span>-nodes<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-62-6" name="__codelineno-62-6" href="#__codelineno-62-6"></a><span class="w">  </span>-out<span class="w"> </span>server.crt<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-62-7" name="__codelineno-62-7" href="#__codelineno-62-7"></a><span class="w">  </span>-keyout<span class="w"> </span>server.key<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-62-8" name="__codelineno-62-8" href="#__codelineno-62-8"></a><span class="w">  </span>-subj<span class="w"> </span><span class="s2">&quot;/CN=postgres&quot;</span>
+<a id="__codelineno-62-9" name="__codelineno-62-9" href="#__codelineno-62-9"></a>
+<a id="__codelineno-62-10" name="__codelineno-62-10" href="#__codelineno-62-10"></a><span class="c1"># Set permissions — PostgreSQL requires the key owned by UID 70 (postgres in alpine)</span>
+<a id="__codelineno-62-11" name="__codelineno-62-11" href="#__codelineno-62-11"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>server.key
+<a id="__codelineno-62-12" name="__codelineno-62-12" href="#__codelineno-62-12"></a>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>server.crt
+<a id="__codelineno-62-13" name="__codelineno-62-13" href="#__codelineno-62-13"></a>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">70</span>:70<span class="w"> </span>server.key
+</code></pre></div>
+<p>The certificates live in <code>config/ssl/</code> which is excluded from git. After regenerating, restart the container:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>postgres
+</code></pre></div>
+<h3 id="stricter-client-verification">Stricter client verification<a class="headerlink" href="#stricter-client-verification" title="Permanent link">&para;</a></h3>
+<p>By default students connect with <code>sslmode=require</code>, which encrypts but doesn't verify the server certificate. To enforce certificate verification:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="c1"># Copy server.crt to the client machine, then:</span>
+<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=verify-ca sslrootcert=/path/to/server.crt&quot;</span>
+</code></pre></div>
+<p><strong>Python:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;your-domain.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
+<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;student01_db&quot;</span><span class="p">,</span>
+<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;student01&quot;</span><span class="p">,</span>
+<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;YOUR_PASSWORD&quot;</span><span class="p">,</span>
+<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">&quot;require&quot;</span>
+<a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a><span class="p">)</span>
+</code></pre></div>
+<p><strong>Node.js:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
+<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;your-domain.com&#39;</span><span class="p">,</span>
+<a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
+<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01_db&#39;</span><span class="p">,</span>
+<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01&#39;</span><span class="p">,</span>
+<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;YOUR_PASSWORD&#39;</span><span class="p">,</span>
+<a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// set to true and provide ca if using verify-ca</span>
+<a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a><span class="p">});</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
