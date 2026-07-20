@@ -13,7 +13,7 @@ services:
       - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
       - ./config/ssl/server.crt:/etc/ssl/certs/server.crt:ro
-      - ./config/ssl/server.key:/etc/ssl/private/server.key:ro
+      - ./config/ssl/server.key:/var/lib/postgresql/server.key:ro
     command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
     ports:
       - "5432:5432"
