@@ -1962,8 +1962,8 @@
 <h3 id="step-1-configure-environment">Step 1: Configure environment<a class="headerlink" href="#step-1-configure-environment" title="Permanent link">&para;</a></h3>
 <p>Create a <code>.env</code> file in the project root:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Generate both required passwords</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;POSTGRES_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>.env
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;GRAFANA_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.env
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"POSTGRES_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>&gt;<span class="w"> </span>.env
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"GRAFANA_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.env
 </code></pre></div>
 <h3 id="step-2-set-up-tailscale">Step 2: Set up Tailscale<a class="headerlink" href="#step-2-set-up-tailscale" title="Permanent link">&para;</a></h3>
 <p>Both the local machine and VPS must be joined to the same Tailscale network (tailnet). The VPS acts as the headnode.</p>
@@ -2073,7 +2073,7 @@
 <li>Connect as admin and create the database:</li>
 </ol>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nb">source</span><span class="w"> </span>.env
-<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nv">PGPASSWORD</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$POSTGRES_ADMIN_PASSWORD</span><span class="s2">&quot;</span><span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nv">PGPASSWORD</span><span class="o">=</span><span class="s2">"</span><span class="nv">$POSTGRES_ADMIN_PASSWORD</span><span class="s2">"</span><span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
 </code></pre></div>
 <ol>
 <li>Run the following SQL (replace <code>your_database_name</code> with your desired name):</li>
@@ -2090,7 +2090,7 @@
 <a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="c1">-- Grant schema permissions</span>
 <a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
 <a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>
-<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="c1">-- Default privileges: students can use each other&#39;s tables</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="c1">-- Default privileges: students can use each other's tables</span>
 <a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span>
 <a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="w">    </span><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">TABLES</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
 <a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span>
@@ -2105,7 +2105,7 @@
 <ol>
 <li>Students can now connect:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=your_database_name user=jsmith sslmode=require&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=your_database_name user=jsmith sslmode=require"</span>
 </code></pre></div>
 <p><strong>Note:</strong> New students created via <code>create_students.sh</code> are automatically added to the <code>students</code> role.</p>
 <h3 id="step-7-set-up-backups">Step 7: Set up backups<a class="headerlink" href="#step-7-set-up-backups" title="Permanent link">&para;</a></h3>
@@ -2126,7 +2126,7 @@
 </code></pre></div>
 <h3 id="step-8-test-student-connection">Step 8: Test student connection<a class="headerlink" href="#step-8-test-student-connection" title="Permanent link">&para;</a></h3>
 <p>From any external machine:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
 </code></pre></div>
 <h2 id="student-connection-guide">Student connection guide<a class="headerlink" href="#student-connection-guide" title="Permanent link">&para;</a></h2>
 <h3 id="connection-details">Connection details<a class="headerlink" href="#connection-details" title="Permanent link">&para;</a></h3>
@@ -2164,29 +2164,29 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>postgresql://studentXX:PASSWORD@your-domain.com:54321/studentXX_db?sslmode<span class="o">=</span>require
 </code></pre></div>
 <h3 id="using-psql">Using psql<a class="headerlink" href="#using-psql" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
 </code></pre></div>
 <h3 id="using-python-psycopg2">Using Python (psycopg2)<a class="headerlink" href="#using-python-psycopg2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
 <a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
 <a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;your-domain.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">"your-domain.com"</span><span class="p">,</span>
 <a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
-<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;student01_db&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;student01&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;YOUR_PASSWORD&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">&quot;require&quot;</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">"student01_db"</span><span class="p">,</span>
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">"student01"</span><span class="p">,</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">"YOUR_PASSWORD"</span><span class="p">,</span>
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">"require"</span>
 <a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="p">)</span>
 </code></pre></div>
 <h3 id="using-nodejs-pg">Using Node.js (pg)<a class="headerlink" href="#using-nodejs-pg" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Pool</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;pg&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Pool</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'pg'</span><span class="p">);</span>
 <a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
 <a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
-<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;your-domain.com&#39;</span><span class="p">,</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-domain.com'</span><span class="p">,</span>
 <a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
-<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01_db&#39;</span><span class="p">,</span>
-<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01&#39;</span><span class="p">,</span>
-<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;YOUR_PASSWORD&#39;</span><span class="p">,</span>
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01_db'</span><span class="p">,</span>
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01'</span><span class="p">,</span>
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'YOUR_PASSWORD'</span><span class="p">,</span>
 <a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
 <a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="p">});</span>
 </code></pre></div>
@@ -2204,13 +2204,13 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>gunzip<span class="w"> </span>-c<span class="w"> </span>/path/to/backup.sql.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin
 </code></pre></div>
 <h3 id="reset-student-password">Reset student password<a class="headerlink" href="#reset-student-password" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;ALTER USER student01 WITH PASSWORD &#39;new_password&#39;;&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER USER student01 WITH PASSWORD 'new_password';"</span>
 </code></pre></div>
 <h3 id="add-new-student">Add new student<a class="headerlink" href="#add-new-student" title="Permanent link">&para;</a></h3>
 <p>The preferred method is adding the username to <code>credentials/students.txt</code> and re-running <code>./scripts/create_students.sh</code> — it is idempotent and handles role membership automatically.</p>
 <p>To add a single student manually:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="s">CREATE USER newuser WITH PASSWORD &#39;secure_password&#39; CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="s">CREATE USER newuser WITH PASSWORD 'secure_password' CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;</span>
 <a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="s">CREATE DATABASE newuser_db OWNER newuser;</span>
 <a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="s">REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;</span>
 <a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="s">GRANT CONNECT ON DATABASE newuser_db TO newuser;</span>
@@ -2283,12 +2283,12 @@
 <a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="p">);</span>
 <a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>
 <a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="c1">-- Insert a vector</span>
-<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">embedding</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;hello world&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;[0.1, 0.2, ...]&#39;</span><span class="p">);</span>
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">embedding</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">,</span><span class="w"> </span><span class="s1">'[0.1, 0.2, ...]'</span><span class="p">);</span>
 <a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>
 <a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="c1">-- Nearest-neighbour search (cosine distance)</span>
 <a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">content</span>
 <a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="k">FROM</span><span class="w"> </span><span class="n">documents</span>
-<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="s1">&#39;[0.1, 0.2, ...]&#39;</span>
+<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="s1">'[0.1, 0.2, ...]'</span>
 <a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
 <a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a>
 <a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a><span class="c1">-- Create an index for fast ANN search</span>
@@ -2468,7 +2468,7 @@
 <h3 id="fail2ban-for-postgresql-connections">Fail2ban for PostgreSQL connections<a class="headerlink" href="#fail2ban-for-postgresql-connections" title="Permanent link">&para;</a></h3>
 <p>Fail2ban automatically bans IPs that have too many failed connection attempts.</p>
 <p><strong>1. Create the filter</strong> (on VPS):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/fail2ban/filter.d/nginx-stream.conf<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/fail2ban/filter.d/nginx-stream.conf<span class="w"> </span><span class="s">&lt;&lt; 'EOF'</span>
 <a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="s">[Definition]</span>
 <a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="s">failregex = ^&lt;HOST&gt; \[.*\] TCP 502</span>
 <a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="s">            ^&lt;HOST&gt; \[.*\] TCP 500</span>
@@ -2476,7 +2476,7 @@
 <a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="s">EOF</span>
 </code></pre></div>
 <p><strong>2. Add the jail</strong> (on VPS):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fail2ban/jail.local<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fail2ban/jail.local<span class="w"> </span><span class="s">&lt;&lt; 'EOF'</span>
 <a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
 <a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="s">[nginx-stream]</span>
 <a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="s">enabled = true</span>
@@ -2540,7 +2540,7 @@
 <a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>nc<span class="w"> </span>-zv<span class="w"> </span>your-domain.com<span class="w"> </span><span class="m">54321</span>
 <a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
 <a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Test PostgreSQL connection</span>
-<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=jsmith_db user=jsmith&quot;</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=jsmith_db user=jsmith"</span>
 </code></pre></div>
 <p><strong>On the VPS:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Check if NGINX is listening on the port</span>
@@ -2559,7 +2559,7 @@
 <a id="__codelineno-53-14" name="__codelineno-53-14" href="#__codelineno-53-14"></a>sudo<span class="w"> </span>tail<span class="w"> </span>-20<span class="w"> </span>/var/log/nginx/stream_error.log
 <a id="__codelineno-53-15" name="__codelineno-53-15" href="#__codelineno-53-15"></a>
 <a id="__codelineno-53-16" name="__codelineno-53-16" href="#__codelineno-53-16"></a><span class="c1"># Verify stream block is loaded in NGINX config</span>
-<a id="__codelineno-53-17" name="__codelineno-53-17" href="#__codelineno-53-17"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s1">&#39;stream {&#39;</span>
+<a id="__codelineno-53-17" name="__codelineno-53-17" href="#__codelineno-53-17"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s1">'stream {'</span>
 <a id="__codelineno-53-18" name="__codelineno-53-18" href="#__codelineno-53-18"></a>
 <a id="__codelineno-53-19" name="__codelineno-53-19" href="#__codelineno-53-19"></a><span class="c1"># Check firewall status</span>
 <a id="__codelineno-53-20" name="__codelineno-53-20" href="#__codelineno-53-20"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
@@ -2610,7 +2610,7 @@
 <a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>ping<span class="w"> </span>&lt;vps-tailscale-ip&gt;
 <a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a>
 <a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a><span class="c1"># From the VPS</span>
-<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>ssh<span class="w"> </span>&lt;your-vps&gt;<span class="w"> </span><span class="s2">&quot;ping -c 3 &lt;local-tailscale-ip&gt;&quot;</span>
+<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>ssh<span class="w"> </span>&lt;your-vps&gt;<span class="w"> </span><span class="s2">"ping -c 3 &lt;local-tailscale-ip&gt;"</span>
 </code></pre></div>
 <ol>
 <li>Re-authenticate if a machine shows offline:</li>
@@ -2646,12 +2646,12 @@
 <li>Verify username and password are correct</li>
 <li>Check if user exists:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\\du&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\du"</span>
 </code></pre></div>
 <ol>
 <li>Check if database exists:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\\l&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\l"</span>
 </code></pre></div>
 <hr />
 <h2 id="ssl-certificate-setup">SSL certificate setup<a class="headerlink" href="#ssl-certificate-setup" title="Permanent link">&para;</a></h2>
@@ -2664,7 +2664,7 @@
 <a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-days<span class="w"> </span><span class="m">3650</span><span class="w"> </span>-nodes<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-62-6" name="__codelineno-62-6" href="#__codelineno-62-6"></a><span class="w">  </span>-out<span class="w"> </span>server.crt<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-62-7" name="__codelineno-62-7" href="#__codelineno-62-7"></a><span class="w">  </span>-keyout<span class="w"> </span>server.key<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-62-8" name="__codelineno-62-8" href="#__codelineno-62-8"></a><span class="w">  </span>-subj<span class="w"> </span><span class="s2">&quot;/CN=postgres&quot;</span>
+<a id="__codelineno-62-8" name="__codelineno-62-8" href="#__codelineno-62-8"></a><span class="w">  </span>-subj<span class="w"> </span><span class="s2">"/CN=postgres"</span>
 <a id="__codelineno-62-9" name="__codelineno-62-9" href="#__codelineno-62-9"></a>
 <a id="__codelineno-62-10" name="__codelineno-62-10" href="#__codelineno-62-10"></a><span class="c1"># Set permissions — PostgreSQL requires the key owned by UID 70 (postgres in alpine)</span>
 <a id="__codelineno-62-11" name="__codelineno-62-11" href="#__codelineno-62-11"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>server.key
@@ -2677,25 +2677,25 @@
 <h3 id="stricter-client-verification">Stricter client verification<a class="headerlink" href="#stricter-client-verification" title="Permanent link">&para;</a></h3>
 <p>By default students connect with <code>sslmode=require</code>, which encrypts but doesn't verify the server certificate. To enforce certificate verification:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="c1"># Copy server.crt to the client machine, then:</span>
-<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>psql<span class="w"> </span><span class="s2">&quot;host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=verify-ca sslrootcert=/path/to/server.crt&quot;</span>
+<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=verify-ca sslrootcert=/path/to/server.crt"</span>
 </code></pre></div>
 <p><strong>Python:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">&quot;your-domain.com&quot;</span><span class="p">,</span>
+<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">"your-domain.com"</span><span class="p">,</span>
 <a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
-<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">&quot;student01_db&quot;</span><span class="p">,</span>
-<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">&quot;student01&quot;</span><span class="p">,</span>
-<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;YOUR_PASSWORD&quot;</span><span class="p">,</span>
-<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">&quot;require&quot;</span>
+<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">"student01_db"</span><span class="p">,</span>
+<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">"student01"</span><span class="p">,</span>
+<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">"YOUR_PASSWORD"</span><span class="p">,</span>
+<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">"require"</span>
 <a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a><span class="p">)</span>
 </code></pre></div>
 <p><strong>Node.js:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
-<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;your-domain.com&#39;</span><span class="p">,</span>
+<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-domain.com'</span><span class="p">,</span>
 <a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
-<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01_db&#39;</span><span class="p">,</span>
-<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;student01&#39;</span><span class="p">,</span>
-<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;YOUR_PASSWORD&#39;</span><span class="p">,</span>
+<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01_db'</span><span class="p">,</span>
+<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01'</span><span class="p">,</span>
+<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'YOUR_PASSWORD'</span><span class="p">,</span>
 <a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// set to true and provide ca if using verify-ca</span>
 <a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a><span class="p">});</span>
 </code></pre></div>
