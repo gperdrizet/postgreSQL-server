@@ -1,3 +1,0 @@
-{"rule":"ENGLISH_WORD_REPEAT_RULE","sentence":"^\\QTPS 258 1,661\nLatency 3.9ms 12ms\nFailures 0% 0%\\E$"}
-{"rule":"CD_NN","sentence":"^\\Q\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q 1 One user making continuous requests\n\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q 20 Simulate typical class usage\n\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q 50 Push server to limits\n\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q 30 SELECT-only workload\n\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q varies Run your own SQL script\\E$"}
-{"rule":"MISSING_GENITIVE","sentence":"^\\QPostgreSQL authentication errors\\E$"}
