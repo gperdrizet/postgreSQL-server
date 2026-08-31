@@ -345,17 +345,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#table-of-contents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Table of contents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#architecture-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -719,7 +708,7 @@
   <a href="#pgvector-vector-similarity-search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        pgvector — vector similarity search
+        pgvector: vector similarity search
       
     </span>
   </a>
@@ -1114,17 +1103,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#table-of-contents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Table of contents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#architecture-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1488,7 +1466,7 @@
   <a href="#pgvector-vector-similarity-search" class="md-nav__link">
     <span class="md-ellipsis">
       
-        pgvector — vector similarity search
+        pgvector: vector similarity search
       
     </span>
   </a>
@@ -1816,54 +1794,6 @@
 
 <h1 id="postgresql-database-setup-for-students">PostgreSQL database setup for students<a class="headerlink" href="#postgresql-database-setup-for-students" title="Permanent link">&para;</a></h1>
 <p>A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tailscale and NGINX stream proxy.</p>
-<h2 id="table-of-contents">Table of contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="#architecture-overview">Architecture overview</a></li>
-<li><a href="#components">Components</a></li>
-<li><a href="#directory-structure">Directory structure</a></li>
-<li><a href="#setup-instructions">Setup instructions</a></li>
-<li><a href="#prerequisites">Prerequisites</a></li>
-<li><a href="#step-1-configure-environment">Step 1: Configure environment</a></li>
-<li><a href="#step-2-set-up-tailscale">Step 2: Set up Tailscale</a></li>
-<li><a href="#step-3-start-postgresql">Step 3: Start PostgreSQL</a></li>
-<li><a href="#step-4-configure-nginx-on-vps">Step 4: Configure NGINX on VPS</a></li>
-<li><a href="#step-5-create-student-accounts">Step 5: Create student accounts</a></li>
-<li><a href="#step-6-create-shared-database-optional">Step 6: Create shared database (optional)</a></li>
-<li><a href="#step-7-set-up-backups">Step 7: Set up backups</a></li>
-<li><a href="#step-8-test-student-connection">Step 8: Test connection</a></li>
-<li><a href="#student-connection-guide">Student connection guide</a></li>
-<li><a href="#connection-details">Connection details</a></li>
-<li><a href="#connection-string-format">Connection string format</a></li>
-<li><a href="#using-psql">Using psql</a></li>
-<li><a href="#using-python-psycopg2">Using Python (psycopg2)</a></li>
-<li><a href="#using-nodejs-pg">Using Node.js (pg)</a></li>
-<li><a href="#maintenance">Maintenance</a></li>
-<li><a href="#view-logs">View logs</a></li>
-<li><a href="#restart-database">Restart database</a></li>
-<li><a href="#manual-backup">Manual backup</a></li>
-<li><a href="#restore-from-backup">Restore from backup</a></li>
-<li><a href="#reset-student-password">Reset student password</a></li>
-<li><a href="#add-new-student">Add new student</a></li>
-<li><a href="#monitoring">Monitoring</a></li>
-<li><a href="#services">Services</a></li>
-<li><a href="#starting-the-monitoring-stack">Starting the monitoring stack</a></li>
-<li><a href="#accessing-grafana">Accessing Grafana</a></li>
-<li><a href="#pre-configured-dashboard">Pre-configured dashboard</a></li>
-<li><a href="#query-statistics-with-pg_stat_statements">Query statistics with pg_stat_statements</a></li>
-<li><a href="#load-testing">Load testing</a></li>
-<li><a href="#set-up">Set-up</a></li>
-<li><a href="#using-the-load-test-script">Using the load test script</a></li>
-<li><a href="#test-types">Test types</a></li>
-<li><a href="#interpreting-results">Interpreting results</a></li>
-<li><a href="#monitoring-during-load-tests">Monitoring during load tests</a></li>
-<li><a href="#custom-load-test-scripts">Custom load test scripts</a></li>
-<li><a href="#security-notes">Security notes</a></li>
-<li><a href="#security-hardening-optional">Security hardening (optional)</a></li>
-<li><a href="#fail2ban-for-postgresql-connections">Fail2ban for PostgreSQL connections</a></li>
-<li><a href="#nginx-rate-limiting">NGINX rate limiting</a></li>
-<li><a href="#troubleshooting">Troubleshooting</a></li>
-<li><a href="#quick-diagnostic-commands">Quick diagnostic commands</a></li>
-</ul>
 <h2 id="architecture-overview">Architecture overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────┐         Tailscale Tunnel        ┌─────────────────────┐
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│   LOCAL MACHINE     │◄───────────────────────────────►│         VPS         │
@@ -1911,7 +1841,7 @@
 <tr>
 <td>Backup Scripts</td>
 <td>Local</td>
-<td>Automated backups to HDD RAID</td>
+<td>Automated backups</td>
 </tr>
 </tbody>
 </table>
@@ -1930,26 +1860,34 @@
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│       │   ├── datasources/      # Auto-configured Prometheus datasource
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│       │   └── dashboards/       # Dashboard provisioning config
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│       └── dashboards/           # Pre-built dashboard JSON files
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>├── init/
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   └── 00-init.sql               # Runs on first container start
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>├── scripts/
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── create_students.sh        # Create student accounts from credentials/students.txt
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   ├── backup.sh                 # Daily backup script
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   ├── setup-backup-cron.sh      # Install backup cron job
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│   ├── loadtest.sh               # Load testing with pgbench
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│   └── custom_loadtest.sql       # Custom load test SQL script
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>├── vps/
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   └── nginx-stream.conf         # NGINX stream config for the VPS
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>├── docs/
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│   ├── index.md                  # Documentation site home
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>│   ├── setup.md                  # This file
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>│   ├── architecture.md           # Architecture diagrams
-<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>│   └── blog-post.md              # Blog post about the project
-<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>├── credentials/                  # Generated student credentials (git-ignored)
-<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>│   ├── students.txt              # Student usernames, one per line
-<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>│   └── student_credentials.csv
-<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>└── data/                         # PostgreSQL data directory (git-ignored)
-<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>    └── postgres/
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>├── docs/
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>│   ├── index.md                  # Documentation site home
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── setup.md                  # This file
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   ├── architecture.md           # Architecture diagrams
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   └── blog-post.md              # Blog post about the project
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>├── init/
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│   └── 00-init.sql               # Runs on first container start
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>├── scripts/
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│   ├── backup.sh                 # Daily backup script
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>│   ├── create_students.sh        # Create student accounts from credentials/students.txt
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>│   ├── custom_loadtest.sql       # Custom load test SQL script
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>│   ├── loadtest.sh               # Load testing with pgbench
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>│   ├── setup_shared_database.sh  # Create shared access database for users
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>│   ├── setup-backup-cron.sh      # Install backup cron job
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>│   └── setup-startup-service.sh  # Creates and installs systemd unit for Docker stack
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>│
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>├── vps/
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>│   └── nginx-stream.conf         # NGINX stream config for the VPS
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>│
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>├── credentials/                  # Generated student credentials (git-ignored)
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>│   ├── students.txt              # Student usernames, one per line
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>│   └── student_credentials.csv   # Generated default student credentials (user, key, dbname)
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>│
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>└── data/                         # PostgreSQL data directory (git-ignored)
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>    └── postgres/
 </code></pre></div>
 <h2 id="setup-instructions">Setup instructions<a class="headerlink" href="#setup-instructions" title="Permanent link">&para;</a></h2>
 <h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
@@ -2102,31 +2040,34 @@
 <a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a><span class="c1">-- Allow students to connect</span>
 <a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a><span class="k">GRANT</span><span class="w"> </span><span class="k">CONNECT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">your_database_name</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">students</span><span class="p">;</span>
 </code></pre></div>
+<p>Or use the script:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>./scripts/setup_shared_database.sh
+</code></pre></div>
 <ol>
 <li>Students can now connect:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=your_database_name user=jsmith sslmode=require"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=shared_project user=USERNAME sslmode=require"</span>
 </code></pre></div>
 <p><strong>Note:</strong> New students created via <code>create_students.sh</code> are automatically added to the <code>students</code> role.</p>
 <h3 id="step-7-set-up-backups">Step 7: Set up backups<a class="headerlink" href="#step-7-set-up-backups" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
-<p>Edit <code>scripts/backup.sh</code> and update <code>BACKUP_DIR</code> to your HDD RAID path</p>
+<p>Edit <code>scripts/backup.sh</code> and update <code>BACKUP_DIR</code> to your desired backup path.</p>
 </li>
 <li>
 <p>Test backup:</p>
 </li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>./scripts/backup.sh
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>./scripts/backup.sh
 </code></pre></div>
 <ol>
 <li>Install cron job:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>./scripts/setup-backup-cron.sh
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>./scripts/setup-backup-cron.sh
 </code></pre></div>
 <h3 id="step-8-test-student-connection">Step 8: Test student connection<a class="headerlink" href="#step-8-test-student-connection" title="Permanent link">&para;</a></h3>
 <p>From any external machine:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
 </code></pre></div>
 <h2 id="student-connection-guide">Student connection guide<a class="headerlink" href="#student-connection-guide" title="Permanent link">&para;</a></h2>
 <h3 id="connection-details">Connection details<a class="headerlink" href="#connection-details" title="Permanent link">&para;</a></h3>
@@ -2161,61 +2102,61 @@
 </tbody>
 </table>
 <h3 id="connection-string-format">Connection string format<a class="headerlink" href="#connection-string-format" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>postgresql://studentXX:PASSWORD@your-domain.com:54321/studentXX_db?sslmode<span class="o">=</span>require
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>postgresql://studentXX:PASSWORD@your-domain.com:54321/studentXX_db?sslmode<span class="o">=</span>require
 </code></pre></div>
 <h3 id="using-psql">Using psql<a class="headerlink" href="#using-psql" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
 </code></pre></div>
 <h3 id="using-python-psycopg2">Using Python (psycopg2)<a class="headerlink" href="#using-python-psycopg2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
-<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
-<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">"your-domain.com"</span><span class="p">,</span>
-<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
-<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">"student01_db"</span><span class="p">,</span>
-<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">"student01"</span><span class="p">,</span>
-<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">"YOUR_PASSWORD"</span><span class="p">,</span>
-<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">"require"</span>
-<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">"your-domain.com"</span><span class="p">,</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">"student01_db"</span><span class="p">,</span>
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">"student01"</span><span class="p">,</span>
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">"YOUR_PASSWORD"</span><span class="p">,</span>
+<a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">"require"</span>
+<a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="p">)</span>
 </code></pre></div>
 <h3 id="using-nodejs-pg">Using Node.js (pg)<a class="headerlink" href="#using-nodejs-pg" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Pool</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'pg'</span><span class="p">);</span>
-<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
-<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
-<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-domain.com'</span><span class="p">,</span>
-<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
-<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01_db'</span><span class="p">,</span>
-<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01'</span><span class="p">,</span>
-<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'YOUR_PASSWORD'</span><span class="p">,</span>
-<a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="p">});</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Pool</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'pg'</span><span class="p">);</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-domain.com'</span><span class="p">,</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01_db'</span><span class="p">,</span>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01'</span><span class="p">,</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'YOUR_PASSWORD'</span><span class="p">,</span>
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="p">});</span>
 </code></pre></div>
 <h2 id="maintenance">Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
 <h3 id="view-logs">View logs<a class="headerlink" href="#view-logs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>student-postgres
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>student-postgres
 </code></pre></div>
 <h3 id="restart-database">Restart database<a class="headerlink" href="#restart-database" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart
 </code></pre></div>
 <h3 id="manual-backup">Manual backup<a class="headerlink" href="#manual-backup" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>./scripts/backup.sh
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>./scripts/backup.sh
 </code></pre></div>
 <h3 id="restore-from-backup">Restore from backup<a class="headerlink" href="#restore-from-backup" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>gunzip<span class="w"> </span>-c<span class="w"> </span>/path/to/backup.sql.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>gunzip<span class="w"> </span>-c<span class="w"> </span>/path/to/backup.sql.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin
 </code></pre></div>
 <h3 id="reset-student-password">Reset student password<a class="headerlink" href="#reset-student-password" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER USER student01 WITH PASSWORD 'new_password';"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER USER student01 WITH PASSWORD 'new_password';"</span>
 </code></pre></div>
 <h3 id="add-new-student">Add new student<a class="headerlink" href="#add-new-student" title="Permanent link">&para;</a></h3>
 <p>The preferred method is adding the username to <code>credentials/students.txt</code> and re-running <code>./scripts/create_students.sh</code> — it is idempotent and handles role membership automatically.</p>
 <p>To add a single student manually:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="s">CREATE USER newuser WITH PASSWORD 'secure_password' CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;</span>
-<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="s">CREATE DATABASE newuser_db OWNER newuser;</span>
-<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="s">REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;</span>
-<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="s">GRANT CONNECT ON DATABASE newuser_db TO newuser;</span>
-<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="s">GRANT students TO newuser;</span>
-<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="s">EOF</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="s">CREATE USER newuser WITH PASSWORD 'secure_password' CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;</span>
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="s">CREATE DATABASE newuser_db OWNER newuser;</span>
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="s">REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;</span>
+<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="s">GRANT CONNECT ON DATABASE newuser_db TO newuser;</span>
+<a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a><span class="s">GRANT students TO newuser;</span>
+<a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a><span class="s">EOF</span>
 </code></pre></div>
 <h2 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h2>
 <p>The stack includes a full monitoring solution with Prometheus, Grafana, and pg_stat_statements.</p>
@@ -2247,7 +2188,7 @@
 </tbody>
 </table>
 <h3 id="starting-the-monitoring-stack">Starting the monitoring stack<a class="headerlink" href="#starting-the-monitoring-stack" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>
 <p>All monitoring services start automatically with PostgreSQL.</p>
 <h3 id="accessing-grafana">Accessing Grafana<a class="headerlink" href="#accessing-grafana" title="Permanent link">&para;</a></h3>
@@ -2269,30 +2210,30 @@
 <li>Transaction rate (commits vs rollbacks)</li>
 <li>Locks by mode</li>
 </ul>
-<h3 id="pgvector-vector-similarity-search">pgvector — vector similarity search<a class="headerlink" href="#pgvector-vector-similarity-search" title="Permanent link">&para;</a></h3>
+<h3 id="pgvector-vector-similarity-search"><code>pgvector</code>: vector similarity search<a class="headerlink" href="#pgvector-vector-similarity-search" title="Permanent link">&para;</a></h3>
 <p>The <code>vector</code> extension (pgvector 0.8.x) is pre-installed via the <code>pgvector/pgvector:pg16</code> image and enabled automatically in the <code>postgres</code> database on first start.</p>
 <p><strong>Enable in any database:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">vector</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">vector</span><span class="p">;</span>
 </code></pre></div>
 <p><strong>Basic usage:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1">-- Create a table with a vector column (e.g. 1536-dim OpenAI embeddings)</span>
-<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span>
-<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
-<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="w">    </span><span class="n">content</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
-<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="w">    </span><span class="n">embedding</span><span class="w"> </span><span class="n">vector</span><span class="p">(</span><span class="mi">1536</span><span class="p">)</span>
-<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="p">);</span>
-<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>
-<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a><span class="c1">-- Insert a vector</span>
-<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">embedding</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">,</span><span class="w"> </span><span class="s1">'[0.1, 0.2, ...]'</span><span class="p">);</span>
-<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>
-<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="c1">-- Nearest-neighbour search (cosine distance)</span>
-<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">content</span>
-<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="k">FROM</span><span class="w"> </span><span class="n">documents</span>
-<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="s1">'[0.1, 0.2, ...]'</span>
-<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
-<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a>
-<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a><span class="c1">-- Create an index for fast ANN search</span>
-<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">hnsw</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="n">vector_cosine_ops</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1">-- Create a table with a vector column (e.g. 1536-dim OpenAI embeddings)</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="w">    </span><span class="n">content</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a><span class="w">    </span><span class="n">embedding</span><span class="w"> </span><span class="n">vector</span><span class="p">(</span><span class="mi">1536</span><span class="p">)</span>
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a><span class="p">);</span>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a><span class="c1">-- Insert a vector</span>
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">embedding</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'hello world'</span><span class="p">,</span><span class="w"> </span><span class="s1">'[0.1, 0.2, ...]'</span><span class="p">);</span>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a><span class="c1">-- Nearest-neighbor search (cosine distance)</span>
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">content</span>
+<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a><span class="k">FROM</span><span class="w"> </span><span class="n">documents</span>
+<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="s1">'[0.1, 0.2, ...]'</span>
+<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a>
+<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a><span class="c1">-- Create an index for fast ANN search</span>
+<a id="__codelineno-38-18" name="__codelineno-38-18" href="#__codelineno-38-18"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">documents</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">hnsw</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="n">vector_cosine_ops</span><span class="p">);</span>
 </code></pre></div>
 <p><strong>Distance operators:</strong></p>
 <table>
@@ -2322,61 +2263,61 @@
 </tbody>
 </table>
 <p>See the <a href="https://github.com/pgvector/pgvector">pgvector documentation</a> for full index options (<code>ivfflat</code>, <code>hnsw</code>) and query tuning.</p>
-<h3 id="query-statistics-with-pg_stat_statements">Query statistics with pg_stat_statements<a class="headerlink" href="#query-statistics-with-pg_stat_statements" title="Permanent link">&para;</a></h3>
+<h3 id="query-statistics-with-pg_stat_statements">Query statistics with <code>pg_stat_statements</code><a class="headerlink" href="#query-statistics-with-pg_stat_statements" title="Permanent link">&para;</a></h3>
 <p>Query-level statistics are available via the <code>pg_stat_statements</code> extension:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1">-- Top 10 slowest queries by total time</span>
-<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="k">SELECT</span><span class="w"> </span>
-<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="w">    </span><span class="k">substring</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_preview</span><span class="p">,</span>
-<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="w">    </span><span class="n">calls</span><span class="p">,</span>
-<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">total_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total_ms</span><span class="p">,</span>
-<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_ms</span><span class="p">,</span>
-<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="w">    </span><span class="k">rows</span>
-<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
-<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_exec_time</span><span class="w"> </span><span class="k">DESC</span>
-<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
-<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>
-<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a><span class="c1">-- Most frequently called queries</span>
-<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a><span class="k">SELECT</span><span class="w"> </span>
-<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a><span class="w">    </span><span class="k">substring</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_preview</span><span class="p">,</span>
-<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a><span class="w">    </span><span class="n">calls</span><span class="p">,</span>
-<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_ms</span>
-<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
-<a id="__codelineno-38-18" name="__codelineno-38-18" href="#__codelineno-38-18"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="k">DESC</span>
-<a id="__codelineno-38-19" name="__codelineno-38-19" href="#__codelineno-38-19"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
-<a id="__codelineno-38-20" name="__codelineno-38-20" href="#__codelineno-38-20"></a>
-<a id="__codelineno-38-21" name="__codelineno-38-21" href="#__codelineno-38-21"></a><span class="c1">-- Reset statistics</span>
-<a id="__codelineno-38-22" name="__codelineno-38-22" href="#__codelineno-38-22"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">();</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1">-- Top 10 slowest queries by total time</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a><span class="k">SELECT</span><span class="w"> </span>
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a><span class="w">    </span><span class="k">substring</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_preview</span><span class="p">,</span>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="w">    </span><span class="n">calls</span><span class="p">,</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">total_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total_ms</span><span class="p">,</span>
+<a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_ms</span><span class="p">,</span>
+<a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a><span class="w">    </span><span class="k">rows</span>
+<a id="__codelineno-39-8" name="__codelineno-39-8" href="#__codelineno-39-8"></a><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
+<a id="__codelineno-39-9" name="__codelineno-39-9" href="#__codelineno-39-9"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_exec_time</span><span class="w"> </span><span class="k">DESC</span>
+<a id="__codelineno-39-10" name="__codelineno-39-10" href="#__codelineno-39-10"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-39-11" name="__codelineno-39-11" href="#__codelineno-39-11"></a>
+<a id="__codelineno-39-12" name="__codelineno-39-12" href="#__codelineno-39-12"></a><span class="c1">-- Most frequently called queries</span>
+<a id="__codelineno-39-13" name="__codelineno-39-13" href="#__codelineno-39-13"></a><span class="k">SELECT</span><span class="w"> </span>
+<a id="__codelineno-39-14" name="__codelineno-39-14" href="#__codelineno-39-14"></a><span class="w">    </span><span class="k">substring</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_preview</span><span class="p">,</span>
+<a id="__codelineno-39-15" name="__codelineno-39-15" href="#__codelineno-39-15"></a><span class="w">    </span><span class="n">calls</span><span class="p">,</span>
+<a id="__codelineno-39-16" name="__codelineno-39-16" href="#__codelineno-39-16"></a><span class="w">    </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_ms</span>
+<a id="__codelineno-39-17" name="__codelineno-39-17" href="#__codelineno-39-17"></a><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
+<a id="__codelineno-39-18" name="__codelineno-39-18" href="#__codelineno-39-18"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">calls</span><span class="w"> </span><span class="k">DESC</span>
+<a id="__codelineno-39-19" name="__codelineno-39-19" href="#__codelineno-39-19"></a><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<a id="__codelineno-39-20" name="__codelineno-39-20" href="#__codelineno-39-20"></a>
+<a id="__codelineno-39-21" name="__codelineno-39-21" href="#__codelineno-39-21"></a><span class="c1">-- Reset statistics</span>
+<a id="__codelineno-39-22" name="__codelineno-39-22" href="#__codelineno-39-22"></a><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">();</span>
 </code></pre></div>
 <h2 id="load-testing">Load testing<a class="headerlink" href="#load-testing" title="Permanent link">&para;</a></h2>
 <p>Load testing is done with <code>pgbench</code>, PostgreSQL's built-in benchmarking tool.</p>
 <h3 id="set-up">Set-up<a class="headerlink" href="#set-up" title="Permanent link">&para;</a></h3>
 <p>Install pgbench locally:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>postgresql-contrib
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>postgresql-contrib
 </code></pre></div>
 <p>Or run tests inside the container:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>pgbench<span class="w"> </span>...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>pgbench<span class="w"> </span>...
 </code></pre></div>
 <h3 id="using-the-load-test-script">Using the load test script<a class="headerlink" href="#using-the-load-test-script" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Initialize test tables (required before first test)</span>
-<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>init
-<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>
-<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="c1"># Single user hammering the server (60 seconds)</span>
-<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>single
-<a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a>
-<a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a><span class="c1"># Multiple users (20 clients, 4 threads, 60 seconds)</span>
-<a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>multi
-<a id="__codelineno-41-9" name="__codelineno-41-9" href="#__codelineno-41-9"></a>
-<a id="__codelineno-41-10" name="__codelineno-41-10" href="#__codelineno-41-10"></a><span class="c1"># Stress test (50 clients, 8 threads, 120 seconds)</span>
-<a id="__codelineno-41-11" name="__codelineno-41-11" href="#__codelineno-41-11"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>stress
-<a id="__codelineno-41-12" name="__codelineno-41-12" href="#__codelineno-41-12"></a>
-<a id="__codelineno-41-13" name="__codelineno-41-13" href="#__codelineno-41-13"></a><span class="c1"># Read-only test (SELECT queries only)</span>
-<a id="__codelineno-41-14" name="__codelineno-41-14" href="#__codelineno-41-14"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span><span class="nb">readonly</span>
-<a id="__codelineno-41-15" name="__codelineno-41-15" href="#__codelineno-41-15"></a>
-<a id="__codelineno-41-16" name="__codelineno-41-16" href="#__codelineno-41-16"></a><span class="c1"># Custom duration/parameters</span>
-<a id="__codelineno-41-17" name="__codelineno-41-17" href="#__codelineno-41-17"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>multi<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">90</span>
-<a id="__codelineno-41-18" name="__codelineno-41-18" href="#__codelineno-41-18"></a>
-<a id="__codelineno-41-19" name="__codelineno-41-19" href="#__codelineno-41-19"></a><span class="c1"># Clean up test tables when done</span>
-<a id="__codelineno-41-20" name="__codelineno-41-20" href="#__codelineno-41-20"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>cleanup
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="c1"># Initialize test tables (required before first test)</span>
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>init
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a><span class="c1"># Single user hammering the server (60 seconds)</span>
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>single
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a><span class="c1"># Multiple users (20 clients, 4 threads, 60 seconds)</span>
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>multi
+<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>
+<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a><span class="c1"># Stress test (50 clients, 8 threads, 120 seconds)</span>
+<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>stress
+<a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a>
+<a id="__codelineno-42-13" name="__codelineno-42-13" href="#__codelineno-42-13"></a><span class="c1"># Read-only test (SELECT queries only)</span>
+<a id="__codelineno-42-14" name="__codelineno-42-14" href="#__codelineno-42-14"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span><span class="nb">readonly</span>
+<a id="__codelineno-42-15" name="__codelineno-42-15" href="#__codelineno-42-15"></a>
+<a id="__codelineno-42-16" name="__codelineno-42-16" href="#__codelineno-42-16"></a><span class="c1"># Custom duration/parameters</span>
+<a id="__codelineno-42-17" name="__codelineno-42-17" href="#__codelineno-42-17"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>multi<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">90</span>
+<a id="__codelineno-42-18" name="__codelineno-42-18" href="#__codelineno-42-18"></a>
+<a id="__codelineno-42-19" name="__codelineno-42-19" href="#__codelineno-42-19"></a><span class="c1"># Clean up test tables when done</span>
+<a id="__codelineno-42-20" name="__codelineno-42-20" href="#__codelineno-42-20"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>your_password<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>cleanup
 </code></pre></div>
 <h3 id="test-types">Test types<a class="headerlink" href="#test-types" title="Permanent link">&para;</a></h3>
 <table>
@@ -2423,19 +2364,19 @@
 <li><strong>stddev</strong>: Consistency of response times</li>
 </ul>
 <p>Example output:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>pgbench (PostgreSQL 16.1)
-<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>transaction type: &lt;builtin: TPC-B (sort of)&gt;
-<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>scaling factor: 10
-<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>number of clients: 20
-<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>number of threads: 4
-<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>maximum number of tries: 1
-<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>duration: 60 s
-<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>number of transactions actually processed: 45231
-<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>number of failed transactions: 0 (0.000%)
-<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>latency average = 26.521 ms
-<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a>latency stddev = 18.432 ms
-<a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a>initial connection time = 89.234 ms
-<a id="__codelineno-42-13" name="__codelineno-42-13" href="#__codelineno-42-13"></a>tps = 754.012345 (without initial connection time)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>pgbench (PostgreSQL 16.1)
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>transaction type: &lt;builtin: TPC-B (sort of)&gt;
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>scaling factor: 10
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>number of clients: 20
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a>number of threads: 4
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a>maximum number of tries: 1
+<a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a>duration: 60 s
+<a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a>number of transactions actually processed: 45231
+<a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a>number of failed transactions: 0 (0.000%)
+<a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a>latency average = 26.521 ms
+<a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a>latency stddev = 18.432 ms
+<a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a>initial connection time = 89.234 ms
+<a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a>tps = 754.012345 (without initial connection time)
 </code></pre></div>
 <h3 id="monitoring-during-load-tests">Monitoring during load tests<a class="headerlink" href="#monitoring-during-load-tests" title="Permanent link">&para;</a></h3>
 <ol>
@@ -2445,15 +2386,15 @@
 </ol>
 <h3 id="custom-load-test-scripts">Custom load test scripts<a class="headerlink" href="#custom-load-test-scripts" title="Permanent link">&para;</a></h3>
 <p>Create custom scenarios in <code>scripts/custom_loadtest.sql</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="c1">-- Example: Simulate student workload</span>
-<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="err">\</span><span class="k">set</span><span class="w"> </span><span class="n">student_id</span><span class="w"> </span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span>
-<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="err">\</span><span class="k">set</span><span class="w"> </span><span class="n">assignment_id</span><span class="w"> </span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
-<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>
-<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">assignments</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">assignment_id</span><span class="p">;</span>
-<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="k">UPDATE</span><span class="w"> </span><span class="n">submissions</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">updated_at</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NOW</span><span class="p">()</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">student_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">student_id</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="c1">-- Example: Simulate student workload</span>
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a><span class="err">\</span><span class="k">set</span><span class="w"> </span><span class="n">student_id</span><span class="w"> </span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span>
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a><span class="err">\</span><span class="k">set</span><span class="w"> </span><span class="n">assignment_id</span><span class="w"> </span><span class="n">random</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>
+<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">assignments</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">assignment_id</span><span class="p">;</span>
+<a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="k">UPDATE</span><span class="w"> </span><span class="n">submissions</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">updated_at</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NOW</span><span class="p">()</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">student_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">:</span><span class="n">student_id</span><span class="p">;</span>
 </code></pre></div>
 <p>Run with:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>secret<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>custom<span class="w"> </span>scripts/custom_loadtest.sql<span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="m">60</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>secret<span class="w"> </span>./scripts/loadtest.sh<span class="w"> </span>custom<span class="w"> </span>scripts/custom_loadtest.sql<span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="m">60</span>
 </code></pre></div>
 <h2 id="security-notes">Security notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2468,111 +2409,111 @@
 <h3 id="fail2ban-for-postgresql-connections">Fail2ban for PostgreSQL connections<a class="headerlink" href="#fail2ban-for-postgresql-connections" title="Permanent link">&para;</a></h3>
 <p>Fail2ban automatically bans IPs that have too many failed connection attempts.</p>
 <p><strong>1. Create the filter</strong> (on VPS):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/fail2ban/filter.d/nginx-stream.conf<span class="w"> </span><span class="s">&lt;&lt; 'EOF'</span>
-<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="s">[Definition]</span>
-<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="s">failregex = ^&lt;HOST&gt; \[.*\] TCP 502</span>
-<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="s">            ^&lt;HOST&gt; \[.*\] TCP 500</span>
-<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a><span class="s">ignoreregex =</span>
-<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="s">EOF</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/fail2ban/filter.d/nginx-stream.conf<span class="w"> </span><span class="s">&lt;&lt; 'EOF'</span>
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a><span class="s">[Definition]</span>
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="s">failregex = ^&lt;HOST&gt; \[.*\] TCP 502</span>
+<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="s">            ^&lt;HOST&gt; \[.*\] TCP 500</span>
+<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a><span class="s">ignoreregex =</span>
+<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="s">EOF</span>
 </code></pre></div>
 <p><strong>2. Add the jail</strong> (on VPS):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fail2ban/jail.local<span class="w"> </span><span class="s">&lt;&lt; 'EOF'</span>
-<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
-<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="s">[nginx-stream]</span>
-<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="s">enabled = true</span>
-<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a><span class="s">port = 54321</span>
-<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="s">filter = nginx-stream</span>
-<a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a><span class="s">logpath = /var/log/nginx/stream_access.log</span>
-<a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a><span class="s">maxretry = 10</span>
-<a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a><span class="s">bantime = 3600</span>
-<a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a><span class="s">findtime = 600</span>
-<a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a><span class="s">EOF</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fail2ban/jail.local<span class="w"> </span><span class="s">&lt;&lt; 'EOF'</span>
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a><span class="s">[nginx-stream]</span>
+<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a><span class="s">enabled = true</span>
+<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a><span class="s">port = 54321</span>
+<a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a><span class="s">filter = nginx-stream</span>
+<a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a><span class="s">logpath = /var/log/nginx/stream_access.log</span>
+<a id="__codelineno-47-8" name="__codelineno-47-8" href="#__codelineno-47-8"></a><span class="s">maxretry = 10</span>
+<a id="__codelineno-47-9" name="__codelineno-47-9" href="#__codelineno-47-9"></a><span class="s">bantime = 3600</span>
+<a id="__codelineno-47-10" name="__codelineno-47-10" href="#__codelineno-47-10"></a><span class="s">findtime = 600</span>
+<a id="__codelineno-47-11" name="__codelineno-47-11" href="#__codelineno-47-11"></a><span class="s">EOF</span>
 </code></pre></div>
 <p><strong>3. Restart fail2ban:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>fail2ban
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>fail2ban
 </code></pre></div>
 <p><strong>4. Verify the jail is active:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status
 </code></pre></div>
 <p>You should see <code>nginx-stream</code> in the jail list.</p>
 <p><strong>Useful fail2ban commands:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="c1"># Check status of PostgreSQL jail</span>
-<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status<span class="w"> </span>nginx-stream
-<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>
-<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a><span class="c1"># Unban an IP</span>
-<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span><span class="nb">set</span><span class="w"> </span>nginx-stream<span class="w"> </span>unbanip<span class="w"> </span><span class="m">1</span>.2.3.4
-<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>
-<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="c1"># View banned IPs</span>
-<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>get<span class="w"> </span>nginx-stream<span class="w"> </span>banip
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="c1"># Check status of PostgreSQL jail</span>
+<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status<span class="w"> </span>nginx-stream
+<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a>
+<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a><span class="c1"># Unban an IP</span>
+<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span><span class="nb">set</span><span class="w"> </span>nginx-stream<span class="w"> </span>unbanip<span class="w"> </span><span class="m">1</span>.2.3.4
+<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a>
+<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a><span class="c1"># View banned IPs</span>
+<a id="__codelineno-50-8" name="__codelineno-50-8" href="#__codelineno-50-8"></a>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>get<span class="w"> </span>nginx-stream<span class="w"> </span>banip
 </code></pre></div>
 <h3 id="nginx-rate-limiting">NGINX rate limiting<a class="headerlink" href="#nginx-rate-limiting" title="Permanent link">&para;</a></h3>
 <p>Rate limiting prevents any single IP from opening too many connections.</p>
 <p>The NGINX stream config (<code>vps/nginx-stream.conf</code>) includes:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="k">stream</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="w">    </span><span class="c1"># Track connections per IP (10MB zone = ~160,000 IPs)</span>
-<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="w">    </span><span class="kn">limit_conn_zone</span><span class="w"> </span><span class="nv">$binary_remote_addr</span><span class="w"> </span><span class="s">zone=postgres_conn:10m</span><span class="p">;</span>
-<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a>
-<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a><span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a><span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">54321</span><span class="p">;</span>
-<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">postgresql_backend</span><span class="p">;</span>
-<a id="__codelineno-50-8" name="__codelineno-50-8" href="#__codelineno-50-8"></a>
-<a id="__codelineno-50-9" name="__codelineno-50-9" href="#__codelineno-50-9"></a><span class="w">        </span><span class="c1"># Timeout settings</span>
-<a id="__codelineno-50-10" name="__codelineno-50-10" href="#__codelineno-50-10"></a><span class="w">        </span><span class="kn">proxy_timeout</span><span class="w"> </span><span class="s">600s</span><span class="p">;</span><span class="w">           </span><span class="c1"># Allow long-running queries (10 min)</span>
-<a id="__codelineno-50-11" name="__codelineno-50-11" href="#__codelineno-50-11"></a><span class="w">        </span><span class="kn">proxy_connect_timeout</span><span class="w"> </span><span class="s">30s</span><span class="p">;</span><span class="w">    </span><span class="c1"># Connection establishment timeout</span>
-<a id="__codelineno-50-12" name="__codelineno-50-12" href="#__codelineno-50-12"></a>
-<a id="__codelineno-50-13" name="__codelineno-50-13" href="#__codelineno-50-13"></a><span class="w">        </span><span class="c1"># Buffer settings for better throughput</span>
-<a id="__codelineno-50-14" name="__codelineno-50-14" href="#__codelineno-50-14"></a><span class="w">        </span><span class="kn">proxy_buffer_size</span><span class="w"> </span><span class="mi">16k</span><span class="p">;</span>
-<a id="__codelineno-50-15" name="__codelineno-50-15" href="#__codelineno-50-15"></a>
-<a id="__codelineno-50-16" name="__codelineno-50-16" href="#__codelineno-50-16"></a><span class="w">        </span><span class="c1"># Limit to 5 concurrent connections per IP</span>
-<a id="__codelineno-50-17" name="__codelineno-50-17" href="#__codelineno-50-17"></a><span class="w">        </span><span class="kn">limit_conn</span><span class="w"> </span><span class="s">postgres_conn</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
-<a id="__codelineno-50-18" name="__codelineno-50-18" href="#__codelineno-50-18"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-50-19" name="__codelineno-50-19" href="#__codelineno-50-19"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="k">stream</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="w">    </span><span class="c1"># Track connections per IP (10MB zone = ~160,000 IPs)</span>
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="w">    </span><span class="kn">limit_conn_zone</span><span class="w"> </span><span class="nv">$binary_remote_addr</span><span class="w"> </span><span class="s">zone=postgres_conn:10m</span><span class="p">;</span>
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a><span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a><span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">54321</span><span class="p">;</span>
+<a id="__codelineno-51-7" name="__codelineno-51-7" href="#__codelineno-51-7"></a><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">postgresql_backend</span><span class="p">;</span>
+<a id="__codelineno-51-8" name="__codelineno-51-8" href="#__codelineno-51-8"></a>
+<a id="__codelineno-51-9" name="__codelineno-51-9" href="#__codelineno-51-9"></a><span class="w">        </span><span class="c1"># Timeout settings</span>
+<a id="__codelineno-51-10" name="__codelineno-51-10" href="#__codelineno-51-10"></a><span class="w">        </span><span class="kn">proxy_timeout</span><span class="w"> </span><span class="s">600s</span><span class="p">;</span><span class="w">           </span><span class="c1"># Allow long-running queries (10 min)</span>
+<a id="__codelineno-51-11" name="__codelineno-51-11" href="#__codelineno-51-11"></a><span class="w">        </span><span class="kn">proxy_connect_timeout</span><span class="w"> </span><span class="s">30s</span><span class="p">;</span><span class="w">    </span><span class="c1"># Connection establishment timeout</span>
+<a id="__codelineno-51-12" name="__codelineno-51-12" href="#__codelineno-51-12"></a>
+<a id="__codelineno-51-13" name="__codelineno-51-13" href="#__codelineno-51-13"></a><span class="w">        </span><span class="c1"># Buffer settings for better throughput</span>
+<a id="__codelineno-51-14" name="__codelineno-51-14" href="#__codelineno-51-14"></a><span class="w">        </span><span class="kn">proxy_buffer_size</span><span class="w"> </span><span class="mi">16k</span><span class="p">;</span>
+<a id="__codelineno-51-15" name="__codelineno-51-15" href="#__codelineno-51-15"></a>
+<a id="__codelineno-51-16" name="__codelineno-51-16" href="#__codelineno-51-16"></a><span class="w">        </span><span class="c1"># Limit to 5 concurrent connections per IP</span>
+<a id="__codelineno-51-17" name="__codelineno-51-17" href="#__codelineno-51-17"></a><span class="w">        </span><span class="kn">limit_conn</span><span class="w"> </span><span class="s">postgres_conn</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<a id="__codelineno-51-18" name="__codelineno-51-18" href="#__codelineno-51-18"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-51-19" name="__codelineno-51-19" href="#__codelineno-51-19"></a><span class="p">}</span>
 </code></pre></div>
 <p>This limits each IP address to 5 concurrent connections. Since each student is limited to 3 database connections, this provides headroom while preventing any single user from monopolizing server resources. The extended timeouts (600s) allow for long-running student queries.</p>
 <p>To apply rate limiting, update the stream block in <code>/etc/nginx/nginx.conf</code> on the VPS and reload:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
 </code></pre></div>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="quick-diagnostic-commands">Quick diagnostic commands<a class="headerlink" href="#quick-diagnostic-commands" title="Permanent link">&para;</a></h3>
 <p>Run these commands to quickly identify where a connection issue is occurring:</p>
 <p><strong>From your client machine:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># Test if port is reachable</span>
-<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>nc<span class="w"> </span>-zv<span class="w"> </span>your-domain.com<span class="w"> </span><span class="m">54321</span>
-<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
-<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Test PostgreSQL connection</span>
-<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=jsmith_db user=jsmith"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Test if port is reachable</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>nc<span class="w"> </span>-zv<span class="w"> </span>your-domain.com<span class="w"> </span><span class="m">54321</span>
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="c1"># Test PostgreSQL connection</span>
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=jsmith_db user=jsmith"</span>
 </code></pre></div>
 <p><strong>On the VPS:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Check if NGINX is listening on the port</span>
-<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">54321</span>
-<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>
-<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="c1"># Check Tailscale status and peer connectivity</span>
-<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>tailscale<span class="w"> </span>status
-<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a>
-<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a><span class="c1"># Test connection to PostgreSQL through Tailscale</span>
-<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a>nc<span class="w"> </span>-zv<span class="w"> </span>&lt;local-tailscale-ip&gt;<span class="w"> </span><span class="m">5432</span>
-<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>
-<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a><span class="c1"># Test PostgreSQL directly through Tailscale</span>
-<a id="__codelineno-53-11" name="__codelineno-53-11" href="#__codelineno-53-11"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>password<span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>&lt;local-tailscale-ip&gt;<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span><span class="w"> </span>-U<span class="w"> </span>username<span class="w"> </span>-d<span class="w"> </span>database_name
-<a id="__codelineno-53-12" name="__codelineno-53-12" href="#__codelineno-53-12"></a>
-<a id="__codelineno-53-13" name="__codelineno-53-13" href="#__codelineno-53-13"></a><span class="c1"># Check NGINX stream logs</span>
-<a id="__codelineno-53-14" name="__codelineno-53-14" href="#__codelineno-53-14"></a>sudo<span class="w"> </span>tail<span class="w"> </span>-20<span class="w"> </span>/var/log/nginx/stream_error.log
-<a id="__codelineno-53-15" name="__codelineno-53-15" href="#__codelineno-53-15"></a>
-<a id="__codelineno-53-16" name="__codelineno-53-16" href="#__codelineno-53-16"></a><span class="c1"># Verify stream block is loaded in NGINX config</span>
-<a id="__codelineno-53-17" name="__codelineno-53-17" href="#__codelineno-53-17"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s1">'stream {'</span>
-<a id="__codelineno-53-18" name="__codelineno-53-18" href="#__codelineno-53-18"></a>
-<a id="__codelineno-53-19" name="__codelineno-53-19" href="#__codelineno-53-19"></a><span class="c1"># Check firewall status</span>
-<a id="__codelineno-53-20" name="__codelineno-53-20" href="#__codelineno-53-20"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="c1"># Check if NGINX is listening on the port</span>
+<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">54321</span>
+<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>
+<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="c1"># Check Tailscale status and peer connectivity</span>
+<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>tailscale<span class="w"> </span>status
+<a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>
+<a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a><span class="c1"># Test connection to PostgreSQL through Tailscale</span>
+<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>nc<span class="w"> </span>-zv<span class="w"> </span>&lt;local-tailscale-ip&gt;<span class="w"> </span><span class="m">5432</span>
+<a id="__codelineno-54-9" name="__codelineno-54-9" href="#__codelineno-54-9"></a>
+<a id="__codelineno-54-10" name="__codelineno-54-10" href="#__codelineno-54-10"></a><span class="c1"># Test PostgreSQL directly through Tailscale</span>
+<a id="__codelineno-54-11" name="__codelineno-54-11" href="#__codelineno-54-11"></a><span class="nv">PGPASSWORD</span><span class="o">=</span>password<span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>&lt;local-tailscale-ip&gt;<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span><span class="w"> </span>-U<span class="w"> </span>username<span class="w"> </span>-d<span class="w"> </span>database_name
+<a id="__codelineno-54-12" name="__codelineno-54-12" href="#__codelineno-54-12"></a>
+<a id="__codelineno-54-13" name="__codelineno-54-13" href="#__codelineno-54-13"></a><span class="c1"># Check NGINX stream logs</span>
+<a id="__codelineno-54-14" name="__codelineno-54-14" href="#__codelineno-54-14"></a>sudo<span class="w"> </span>tail<span class="w"> </span>-20<span class="w"> </span>/var/log/nginx/stream_error.log
+<a id="__codelineno-54-15" name="__codelineno-54-15" href="#__codelineno-54-15"></a>
+<a id="__codelineno-54-16" name="__codelineno-54-16" href="#__codelineno-54-16"></a><span class="c1"># Verify stream block is loaded in NGINX config</span>
+<a id="__codelineno-54-17" name="__codelineno-54-17" href="#__codelineno-54-17"></a>sudo<span class="w"> </span>nginx<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A5<span class="w"> </span><span class="s1">'stream {'</span>
+<a id="__codelineno-54-18" name="__codelineno-54-18" href="#__codelineno-54-18"></a>
+<a id="__codelineno-54-19" name="__codelineno-54-19" href="#__codelineno-54-19"></a><span class="c1"># Check firewall status</span>
+<a id="__codelineno-54-20" name="__codelineno-54-20" href="#__codelineno-54-20"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
 </code></pre></div>
 <p><strong>On the local machine (PostgreSQL host):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="c1"># Check if PostgreSQL container is running</span>
-<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>ps
-<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>
-<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="c1"># Check PostgreSQL logs</span>
-<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>docker<span class="w"> </span>logs<span class="w"> </span>student-postgres<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-30
-<a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>
-<a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a><span class="c1"># Test local PostgreSQL connection</span>
-<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="c1"># Check if PostgreSQL container is running</span>
+<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>ps
+<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a>
+<a id="__codelineno-55-4" name="__codelineno-55-4" href="#__codelineno-55-4"></a><span class="c1"># Check PostgreSQL logs</span>
+<a id="__codelineno-55-5" name="__codelineno-55-5" href="#__codelineno-55-5"></a>docker<span class="w"> </span>logs<span class="w"> </span>student-postgres<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-30
+<a id="__codelineno-55-6" name="__codelineno-55-6" href="#__codelineno-55-6"></a>
+<a id="__codelineno-55-7" name="__codelineno-55-7" href="#__codelineno-55-7"></a><span class="c1"># Test local PostgreSQL connection</span>
+<a id="__codelineno-55-8" name="__codelineno-55-8" href="#__codelineno-55-8"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
 </code></pre></div>
 <h3 id="cannot-connect-to-database">Cannot connect to database<a class="headerlink" href="#cannot-connect-to-database" title="Permanent link">&para;</a></h3>
 <h4 id="symptom-connection-timed-out">Symptom: Connection timed out<a class="headerlink" href="#symptom-connection-timed-out" title="Permanent link">&para;</a></h4>
@@ -2599,32 +2540,32 @@
 <ol>
 <li>Check that both machines are active on the tailnet:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="c1"># On either machine</span>
-<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>tailscale<span class="w"> </span>status
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="c1"># On either machine</span>
+<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>tailscale<span class="w"> </span>status
 </code></pre></div>
 <p>Both the local machine and VPS should show as active with their respective Tailscale IPs.</p>
 <ol>
 <li>Test direct connectivity:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="c1"># From the local machine</span>
-<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>ping<span class="w"> </span>&lt;vps-tailscale-ip&gt;
-<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a>
-<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a><span class="c1"># From the VPS</span>
-<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>ssh<span class="w"> </span>&lt;your-vps&gt;<span class="w"> </span><span class="s2">"ping -c 3 &lt;local-tailscale-ip&gt;"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="c1"># From the local machine</span>
+<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>ping<span class="w"> </span>&lt;vps-tailscale-ip&gt;
+<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a>
+<a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a><span class="c1"># From the VPS</span>
+<a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a>ssh<span class="w"> </span>&lt;your-vps&gt;<span class="w"> </span><span class="s2">"ping -c 3 &lt;local-tailscale-ip&gt;"</span>
 </code></pre></div>
 <ol>
 <li>Re-authenticate if a machine shows offline:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up
 </code></pre></div>
 <h3 id="nginx-stream-not-working">NGINX stream not working<a class="headerlink" href="#nginx-stream-not-working" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Verify stream module is available:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>nginx<span class="w"> </span>-V<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>stream
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>nginx<span class="w"> </span>-V<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>stream
 </code></pre></div>
 <p>If not present, install nginx-full:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx-full
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx-full
 </code></pre></div>
 <ol>
 <li>
@@ -2646,58 +2587,58 @@
 <li>Verify username and password are correct</li>
 <li>Check if user exists:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\du"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\du"</span>
 </code></pre></div>
 <ol>
 <li>Check if database exists:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\l"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\l"</span>
 </code></pre></div>
 <hr />
 <h2 id="ssl-certificate-setup">SSL certificate setup<a class="headerlink" href="#ssl-certificate-setup" title="Permanent link">&para;</a></h2>
-<p>SSL is already enabled in this stack — <code>pg_hba.conf</code> uses <code>hostssl</code> for all remote connections and the certificates are mounted into the PostgreSQL container. This section documents how the certificates are generated so they can be regenerated if needed.</p>
+<p>SSL is already enabled in this stack; <code>pg_hba.conf</code> uses <code>hostssl</code> for all remote connections and the certificates are mounted into the PostgreSQL container. This section documents how the certificates are generated so they can be regenerated if needed.</p>
 <h3 id="generate-certificates">Generate certificates<a class="headerlink" href="#generate-certificates" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>./config/ssl
-<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a><span class="nb">cd</span><span class="w"> </span>./config/ssl
-<a id="__codelineno-62-3" name="__codelineno-62-3" href="#__codelineno-62-3"></a>
-<a id="__codelineno-62-4" name="__codelineno-62-4" href="#__codelineno-62-4"></a><span class="c1"># Generate a self-signed certificate (valid for 10 years)</span>
-<a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-days<span class="w"> </span><span class="m">3650</span><span class="w"> </span>-nodes<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-62-6" name="__codelineno-62-6" href="#__codelineno-62-6"></a><span class="w">  </span>-out<span class="w"> </span>server.crt<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-62-7" name="__codelineno-62-7" href="#__codelineno-62-7"></a><span class="w">  </span>-keyout<span class="w"> </span>server.key<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-62-8" name="__codelineno-62-8" href="#__codelineno-62-8"></a><span class="w">  </span>-subj<span class="w"> </span><span class="s2">"/CN=postgres"</span>
-<a id="__codelineno-62-9" name="__codelineno-62-9" href="#__codelineno-62-9"></a>
-<a id="__codelineno-62-10" name="__codelineno-62-10" href="#__codelineno-62-10"></a><span class="c1"># Set permissions — PostgreSQL requires the key owned by UID 70 (postgres in alpine)</span>
-<a id="__codelineno-62-11" name="__codelineno-62-11" href="#__codelineno-62-11"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>server.key
-<a id="__codelineno-62-12" name="__codelineno-62-12" href="#__codelineno-62-12"></a>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>server.crt
-<a id="__codelineno-62-13" name="__codelineno-62-13" href="#__codelineno-62-13"></a>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">70</span>:70<span class="w"> </span>server.key
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>./config/ssl
+<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a><span class="nb">cd</span><span class="w"> </span>./config/ssl
+<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a>
+<a id="__codelineno-63-4" name="__codelineno-63-4" href="#__codelineno-63-4"></a><span class="c1"># Generate a self-signed certificate (valid for 10 years)</span>
+<a id="__codelineno-63-5" name="__codelineno-63-5" href="#__codelineno-63-5"></a>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-days<span class="w"> </span><span class="m">3650</span><span class="w"> </span>-nodes<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-63-6" name="__codelineno-63-6" href="#__codelineno-63-6"></a><span class="w">  </span>-out<span class="w"> </span>server.crt<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-63-7" name="__codelineno-63-7" href="#__codelineno-63-7"></a><span class="w">  </span>-keyout<span class="w"> </span>server.key<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-63-8" name="__codelineno-63-8" href="#__codelineno-63-8"></a><span class="w">  </span>-subj<span class="w"> </span><span class="s2">"/CN=postgres"</span>
+<a id="__codelineno-63-9" name="__codelineno-63-9" href="#__codelineno-63-9"></a>
+<a id="__codelineno-63-10" name="__codelineno-63-10" href="#__codelineno-63-10"></a><span class="c1"># Set permissions — PostgreSQL requires the key owned by UID 70 (postgres in alpine)</span>
+<a id="__codelineno-63-11" name="__codelineno-63-11" href="#__codelineno-63-11"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>server.key
+<a id="__codelineno-63-12" name="__codelineno-63-12" href="#__codelineno-63-12"></a>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>server.crt
+<a id="__codelineno-63-13" name="__codelineno-63-13" href="#__codelineno-63-13"></a>sudo<span class="w"> </span>chown<span class="w"> </span><span class="m">70</span>:70<span class="w"> </span>server.key
 </code></pre></div>
 <p>The certificates live in <code>config/ssl/</code> which is excluded from git. After regenerating, restart the container:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>postgres
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>postgres
 </code></pre></div>
 <h3 id="stricter-client-verification">Stricter client verification<a class="headerlink" href="#stricter-client-verification" title="Permanent link">&para;</a></h3>
 <p>By default students connect with <code>sslmode=require</code>, which encrypts but doesn't verify the server certificate. To enforce certificate verification:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="c1"># Copy server.crt to the client machine, then:</span>
-<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=verify-ca sslrootcert=/path/to/server.crt"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="c1"># Copy server.crt to the client machine, then:</span>
+<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=jsmith_db user=jsmith sslmode=verify-ca sslrootcert=/path/to/server.crt"</span>
 </code></pre></div>
 <p><strong>Python:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">"your-domain.com"</span><span class="p">,</span>
-<a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
-<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">"student01_db"</span><span class="p">,</span>
-<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">"student01"</span><span class="p">,</span>
-<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">"YOUR_PASSWORD"</span><span class="p">,</span>
-<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">"require"</span>
-<a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="n">conn</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a>    <span class="n">host</span><span class="o">=</span><span class="s2">"your-domain.com"</span><span class="p">,</span>
+<a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a>    <span class="n">port</span><span class="o">=</span><span class="mi">54321</span><span class="p">,</span>
+<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a>    <span class="n">database</span><span class="o">=</span><span class="s2">"student01_db"</span><span class="p">,</span>
+<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a>    <span class="n">user</span><span class="o">=</span><span class="s2">"student01"</span><span class="p">,</span>
+<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a>    <span class="n">password</span><span class="o">=</span><span class="s2">"YOUR_PASSWORD"</span><span class="p">,</span>
+<a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a>    <span class="n">sslmode</span><span class="o">=</span><span class="s2">"require"</span>
+<a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a><span class="p">)</span>
 </code></pre></div>
 <p><strong>Node.js:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
-<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-domain.com'</span><span class="p">,</span>
-<a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
-<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01_db'</span><span class="p">,</span>
-<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01'</span><span class="p">,</span>
-<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'YOUR_PASSWORD'</span><span class="p">,</span>
-<a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// set to true and provide ca if using verify-ca</span>
-<a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a><span class="p">});</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Pool</span><span class="p">({</span>
+<a id="__codelineno-67-2" name="__codelineno-67-2" href="#__codelineno-67-2"></a><span class="w">  </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-domain.com'</span><span class="p">,</span>
+<a id="__codelineno-67-3" name="__codelineno-67-3" href="#__codelineno-67-3"></a><span class="w">  </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="mf">54321</span><span class="p">,</span>
+<a id="__codelineno-67-4" name="__codelineno-67-4" href="#__codelineno-67-4"></a><span class="w">  </span><span class="nx">database</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01_db'</span><span class="p">,</span>
+<a id="__codelineno-67-5" name="__codelineno-67-5" href="#__codelineno-67-5"></a><span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="s1">'student01'</span><span class="p">,</span>
+<a id="__codelineno-67-6" name="__codelineno-67-6" href="#__codelineno-67-6"></a><span class="w">  </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s1">'YOUR_PASSWORD'</span><span class="p">,</span>
+<a id="__codelineno-67-7" name="__codelineno-67-7" href="#__codelineno-67-7"></a><span class="w">  </span><span class="nx">ssl</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">rejectUnauthorized</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// set to true and provide ca if using verify-ca</span>
+<a id="__codelineno-67-8" name="__codelineno-67-8" href="#__codelineno-67-8"></a><span class="p">});</span>
 </code></pre></div>
 
 
