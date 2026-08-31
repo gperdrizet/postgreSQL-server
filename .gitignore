@@ -1,5 +1,6 @@
 # Environment and secrets
 .env
+.venv
 credentials/
 
 # SSL certificates and private keys
