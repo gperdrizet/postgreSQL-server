@@ -1,6 +1,7 @@
 # Environment and secrets
 .env
 .venv
+.vscode
 credentials/
 
 # SSL certificates and private keys
