@@ -9,7 +9,7 @@ A complete, production-ready PostgreSQL setup for educators, indie developers, a
 
 ## Why this project?
 
-Cloud database services charge $15-50+/month for basic PostgreSQL. This project lets you run a **secure, monitored, production-grade database** on a $5/month VPS + your existing hardware.
+This project lets you run a **secure, monitored, production-grade database** on a low cost VPS + your existing hardware.
 
 **Perfect for:**
 
@@ -55,12 +55,13 @@ Cloud database services charge $15-50+/month for basic PostgreSQL. This project 
 ### Prerequisites
 
 - Docker and Docker Compose
-- A VPS with public IP ($5/month from DigitalOcean, Linode, Vultr, etc.)
+- A VPS with public IP
 - Tailscale installed on both machines and joined to the same tailnet
 
 ### 1. Clone and configure
 
 ```bash
+# Clone this repo
 git clone https://github.com/yourusername/postgresSQL-server.git
 cd postgresSQL-server
 
@@ -72,9 +73,14 @@ echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)" >> .env
 ### 2. Generate SSL certificates
 
 ```bash
+# Make directory for certs
 mkdir -p config/ssl && cd config/ssl
+
+# Generate server certs
 openssl req -new -x509 -days 3650 -nodes \
   -out server.crt -keyout server.key -subj "/CN=postgres"
+
+# Set owner only read/write
 chmod 600 server.key && sudo chown 70:70 server.key
 cd ../..
 ```
