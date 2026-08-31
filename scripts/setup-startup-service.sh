@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SERVICE_NAME="postgressql-server-stack.service"
+SERVICE_NAME="postgresql-server-stack.service"
 OLD_SERVICE_NAME="fullstack-sql-stack.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 
@@ -36,7 +36,7 @@ sudo rm -f "/etc/systemd/system/$OLD_SERVICE_NAME"
 
 sudo tee "$SERVICE_PATH" >/dev/null <<EOF
 [Unit]
-Description=postgresSQL-server Docker Compose Stack
+Description=PostgreSQL-server Docker Compose Stack
 Requires=docker.service
 After=docker.service network-online.target
 Wants=network-online.target
