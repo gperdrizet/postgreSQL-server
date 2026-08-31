@@ -2,54 +2,6 @@
 
 A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tailscale and NGINX stream proxy.
 
-## Table of contents
-
-- [Architecture overview](#architecture-overview)
-- [Components](#components)
-- [Directory structure](#directory-structure)
-- [Setup instructions](#setup-instructions)
-  - [Prerequisites](#prerequisites)
-  - [Step 1: Configure environment](#step-1-configure-environment)
-  - [Step 2: Set up Tailscale](#step-2-set-up-tailscale)
-  - [Step 3: Start PostgreSQL](#step-3-start-postgresql)
-  - [Step 4: Configure NGINX on VPS](#step-4-configure-nginx-on-vps)
-  - [Step 5: Create student accounts](#step-5-create-student-accounts)
-  - [Step 6: Create shared database (optional)](#step-6-create-shared-database-optional)
-  - [Step 7: Set up backups](#step-7-set-up-backups)
-  - [Step 8: Test connection](#step-8-test-student-connection)
-- [Student connection guide](#student-connection-guide)
-  - [Connection details](#connection-details)
-  - [Connection string format](#connection-string-format)
-  - [Using psql](#using-psql)
-  - [Using Python (psycopg2)](#using-python-psycopg2)
-  - [Using Node.js (pg)](#using-nodejs-pg)
-- [Maintenance](#maintenance)
-  - [View logs](#view-logs)
-  - [Restart database](#restart-database)
-  - [Manual backup](#manual-backup)
-  - [Restore from backup](#restore-from-backup)
-  - [Reset student password](#reset-student-password)
-  - [Add new student](#add-new-student)
-- [Monitoring](#monitoring)
-  - [Services](#services)
-  - [Starting the monitoring stack](#starting-the-monitoring-stack)
-  - [Accessing Grafana](#accessing-grafana)
-  - [Pre-configured dashboard](#pre-configured-dashboard)
-  - [Query statistics with pg_stat_statements](#query-statistics-with-pg_stat_statements)
-- [Load testing](#load-testing)
-  - [Set-up](#set-up)
-  - [Using the load test script](#using-the-load-test-script)
-  - [Test types](#test-types)
-  - [Interpreting results](#interpreting-results)
-  - [Monitoring during load tests](#monitoring-during-load-tests)
-  - [Custom load test scripts](#custom-load-test-scripts)
-- [Security notes](#security-notes)
-- [Security hardening (optional)](#security-hardening-optional)
-  - [Fail2ban for PostgreSQL connections](#fail2ban-for-postgresql-connections)
-  - [NGINX rate limiting](#nginx-rate-limiting)
-- [Troubleshooting](#troubleshooting)
-  - [Quick diagnostic commands](#quick-diagnostic-commands)
-
 ## Architecture overview
 
 ```text
@@ -79,7 +31,7 @@ A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tail
 | PostgreSQL 16 | Local (Docker) | Database server |
 | Tailscale | Local ↔ VPS | Encrypted tunnel |
 | NGINX Stream | VPS | TCP/SSL proxy |
-| Backup Scripts | Local | Automated backups to HDD RAID |
+| Backup Scripts | Local | Automated backups |
 
 ## Directory structure
 
@@ -98,24 +50,32 @@ postgresSQL-server/
 │       │   ├── datasources/      # Auto-configured Prometheus datasource
 │       │   └── dashboards/       # Dashboard provisioning config
 │       └── dashboards/           # Pre-built dashboard JSON files
-├── init/
-│   └── 00-init.sql               # Runs on first container start
-├── scripts/
-│   ├── create_students.sh        # Create student accounts from credentials/students.txt
-│   ├── backup.sh                 # Daily backup script
-│   ├── setup-backup-cron.sh      # Install backup cron job
-│   ├── loadtest.sh               # Load testing with pgbench
-│   └── custom_loadtest.sql       # Custom load test SQL script
-├── vps/
-│   └── nginx-stream.conf         # NGINX stream config for the VPS
+│
 ├── docs/
 │   ├── index.md                  # Documentation site home
 │   ├── setup.md                  # This file
 │   ├── architecture.md           # Architecture diagrams
 │   └── blog-post.md              # Blog post about the project
+│
+├── init/
+│   └── 00-init.sql               # Runs on first container start
+│
+├── scripts/
+│   ├── backup.sh                 # Daily backup script
+│   ├── create_students.sh        # Create student accounts from credentials/students.txt
+│   ├── custom_loadtest.sql       # Custom load test SQL script
+│   ├── loadtest.sh               # Load testing with pgbench
+│   ├── setup_shared_database.sh  # Create shared access database for users
+│   ├── setup-backup-cron.sh      # Install backup cron job
+│   └── setup-startup-service.sh  # Creates and installs systemd unit for Docker stack
+│
+├── vps/
+│   └── nginx-stream.conf         # NGINX stream config for the VPS
+│
 ├── credentials/                  # Generated student credentials (git-ignored)
 │   ├── students.txt              # Student usernames, one per line
-│   └── student_credentials.csv
+│   └── student_credentials.csv   # Generated default student credentials (user, key, dbname)
+│
 └── data/                         # PostgreSQL data directory (git-ignored)
     └── postgres/
 ```
@@ -299,17 +259,24 @@ If students need a collaborative database they can all access:
    GRANT CONNECT ON DATABASE your_database_name TO students;
    ```
 
+   Or use the script:
+
+   ```bash
+   ./scripts/setup_shared_database.sh
+   ```
+
+
 3. Students can now connect:
 
    ```bash
-   psql "host=your-domain.com port=54321 dbname=your_database_name user=jsmith sslmode=require"
+   psql "host=your-domain.com port=54321 dbname=shared_project user=USERNAME sslmode=require"
    ```
 
 **Note:** New students created via `create_students.sh` are automatically added to the `students` role.
 
 ### Step 7: Set up backups
 
-1. Edit `scripts/backup.sh` and update `BACKUP_DIR` to your HDD RAID path
+1. Edit `scripts/backup.sh` and update `BACKUP_DIR` to your desired backup path.
 
 2. Test backup:
 
@@ -473,7 +440,7 @@ The PostgreSQL Overview dashboard shows:
 - Transaction rate (commits vs rollbacks)
 - Locks by mode
 
-### pgvector — vector similarity search
+### `pgvector`: vector similarity search
 
 The `vector` extension (pgvector 0.8.x) is pre-installed via the `pgvector/pgvector:pg16` image and enabled automatically in the `postgres` database on first start.
 
@@ -496,7 +463,7 @@ CREATE TABLE documents (
 -- Insert a vector
 INSERT INTO documents (content, embedding) VALUES ('hello world', '[0.1, 0.2, ...]');
 
--- Nearest-neighbour search (cosine distance)
+-- Nearest-neighbor search (cosine distance)
 SELECT id, content
 FROM documents
 ORDER BY embedding <=> '[0.1, 0.2, ...]'
@@ -517,7 +484,7 @@ CREATE INDEX ON documents USING hnsw (embedding vector_cosine_ops);
 
 See the [pgvector documentation](https://github.com/pgvector/pgvector) for full index options (`ivfflat`, `hnsw`) and query tuning.
 
-### Query statistics with pg_stat_statements
+### Query statistics with `pg_stat_statements`
 
 Query-level statistics are available via the `pg_stat_statements` extension:
 
@@ -901,7 +868,7 @@ docker exec -it student-postgres psql -U admin -d postgres
 
 ## SSL certificate setup
 
-SSL is already enabled in this stack — `pg_hba.conf` uses `hostssl` for all remote connections and the certificates are mounted into the PostgreSQL container. This section documents how the certificates are generated so they can be regenerated if needed.
+SSL is already enabled in this stack; `pg_hba.conf` uses `hostssl` for all remote connections and the certificates are mounted into the PostgreSQL container. This section documents how the certificates are generated so they can be regenerated if needed.
 
 ### Generate certificates
 
