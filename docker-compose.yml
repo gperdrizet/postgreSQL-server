@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
       POSTGRES_DB: postgres
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - /mnt/fast_scratch/postgreSQL-server/data/postgres:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d:ro
       - ./config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - ./config/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
@@ -49,8 +49,11 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@pyrite.lan
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_LISTEN_PORT: 80
+      # Keep the declarative server list in sync (9.x) even when the config DB already exists
+      PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json:ro
     ports:
       - "100.64.0.2:8088:80"
     networks:

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration - UPDATE THIS PATH
-BACKUP_DIR="/path/to/hdd-raid/postgres-backups"
+BACKUP_DIR="${BACKUP_DIR:-/mnt/arkk/postgreSQL-server/backups}"
 DOCKER_CONTAINER="postgres"
 RETENTION_DAYS=30
 DATE=$(date +%Y-%m-%d_%H-%M-%S)

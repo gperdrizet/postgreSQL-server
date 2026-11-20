@@ -144,6 +144,16 @@ make shell DB=mydb     # Open psql shell
 make backup-all        # Backup all databases
 ```
 
+pgAdmin is available at `http://100.64.0.2:8088` (Tailscale only). Log in with `admin@pyrite.lan` and `PGADMIN_DEFAULT_PASSWORD`; the local PostgreSQL server is registered automatically from `config/pgadmin/servers.json`. pgAdmin cannot import passwords, so enter `POSTGRES_ADMIN_PASSWORD` the first time you connect (and save it if you wish).
+
+## Data and backups
+
+- PostgreSQL data lives outside the checkout at `/mnt/fast_scratch/postgreSQL-server/data/postgres` (bcache-backed NVMe), so moving the repository does not move the databases.
+- Backups are written to `/mnt/arkk/postgreSQL-server/backups` (RAID5) by both `make backup-all` and `scripts/backup.sh`. Override with `BACKUP_DIR=/some/path make ...`.
+- The pgAdmin state volume is already on `/mnt/fast_scratch` via Docker's data root.
+
+See the [setup guide](docs/setup.md#moving-the-data-directory) for the one-time data migration procedure.
+
 ## Start on boot
 
 The Compose services already use `restart: unless-stopped`, and you can also install a systemd unit to guarantee the project stack is brought up on host boot.
@@ -182,6 +192,7 @@ postgresSQL-server/
 ├── config/
 │   ├── postgresql.conf       # Database configuration
 │   ├── pg_hba.conf           # Authentication rules
+│   ├── pgadmin/servers.json  # Pre-registered pgAdmin server
 │   └── ssl/                  # SSL certificates (git-ignored)
 ├── scripts/
 │   ├── create_students.sh    # User/database creation

@@ -19,7 +19,7 @@
 - `make shell DB=mydb` — Open psql shell
 - `make list-users` / `make list-databases` — Inventory
 - `make grant-students-access DB=name` — Grant `students` role access
-- `make backup-all` — Full backup to `backups/`
+- `make backup-all` — Full backup to `/mnt/arkk/postgreSQL-server/backups` (override with `BACKUP_DIR`)
 
 ### Student Management
 - Usernames: lowercase, alphanumeric/underscore (auto-sanitized)
@@ -40,6 +40,10 @@
 - SSL certs: `config/ssl/server.crt` and `server.key` required
 - Auth rules: `config/pg_hba.conf`
 - Students: `NOSUPERUSER NOCREATEDB NOCREATEROLE`
+
+### pgAdmin
+- Web UI at `http://100.64.0.2:8088`; login `admin@pyrite.lan` / `PGADMIN_DEFAULT_PASSWORD`
+- `Local PostgreSQL` server is declarative in `config/pgadmin/servers.json`; pgAdmin 9.x reloads it on every start via `PGADMIN_REPLACE_SERVERS_ON_STARTUP`
 
 ### Monitoring
 - Centralized on the VPS (`gatekeeper`): Prometheus job `pyrite-postgres-exporter`, Grafana dashboard `postgres-main-overview`

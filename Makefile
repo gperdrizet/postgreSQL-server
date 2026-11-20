@@ -9,6 +9,7 @@ export
 DB_HOST ?= 100.64.0.2
 DB_PORT ?= 5432
 DB_USER ?= admin
+BACKUP_DIR ?= /mnt/arkk/postgreSQL-server/backups
 PSQL = PGPASSWORD="$(POSTGRES_ADMIN_PASSWORD)" psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) --pset=pager=off
 
 .PHONY: help list-databases list-tables list-users list-connections \
@@ -220,16 +221,16 @@ ifndef DB
 	@echo "Error: DB required. Usage: make create-backup DB=database_name"
 	@exit 1
 endif
-	@mkdir -p backups
-	@BACKUP_FILE="backups/$(DB)_$$(date +%Y%m%d_%H%M%S).sql.gz"; \
+	@mkdir -p "$(BACKUP_DIR)"
+	@BACKUP_FILE="$(BACKUP_DIR)/$(DB)_$$(date +%Y%m%d_%H%M%S).sql.gz"; \
 	echo "Creating backup: $$BACKUP_FILE"; \
 	PGPASSWORD="$(POSTGRES_ADMIN_PASSWORD)" pg_dump -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) $(DB) | gzip > "$$BACKUP_FILE"; \
 	echo "✓ Backup created: $$BACKUP_FILE"
 
 backup-all:
-	@mkdir -p backups
+	@mkdir -p "$(BACKUP_DIR)"
 	@echo "=== Backing up all databases ==="
-	@BACKUP_FILE="backups/all_databases_$$(date +%Y%m%d_%H%M%S).sql.gz"; \
+	@BACKUP_FILE="$(BACKUP_DIR)/all_databases_$$(date +%Y%m%d_%H%M%S).sql.gz"; \
 	PGPASSWORD="$(POSTGRES_ADMIN_PASSWORD)" pg_dumpall -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) | gzip > "$$BACKUP_FILE"; \
 	echo "✓ Full backup created: $$BACKUP_FILE"
 

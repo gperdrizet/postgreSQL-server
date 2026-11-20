@@ -36,6 +36,7 @@ Monitoring is centralized on the VPS: the local `postgres-exporter` (`100.64.0.2
 | NGINX Stream | VPS | TCP/SSL proxy |
 | Prometheus | VPS (`gatekeeper`) | Scrapes and stores metrics |
 | Grafana | VPS (`gatekeeper`) | Dashboards (`postgres-main-overview`) |
+| pgAdmin | Local (Docker) | Web UI at `100.64.0.2:8088`; server pre-registered |
 | Backup Scripts | Local | Automated backups |
 
 ## Directory structure
@@ -48,6 +49,7 @@ postgresSQL-server/
 ├── config/
 │   ├── postgresql.conf           # PostgreSQL server configuration
 │   ├── pg_hba.conf               # Client authentication rules
+│   ├── pgadmin/servers.json      # Pre-registered pgAdmin server
 │   └── ssl/                      # SSL certificates (git-ignored)
 │
 ├── docs/
@@ -75,9 +77,11 @@ postgresSQL-server/
 │   ├── students.txt              # Student usernames, one per line
 │   └── student_credentials.csv   # Generated default student credentials (user, key, dbname)
 │
-└── data/                         # PostgreSQL data directory (git-ignored)
+└── data/                         # Legacy location, no longer used (see below)
     └── postgres/
 ```
+
+The live PostgreSQL data directory is **not** inside the checkout: it is bind-mounted from `/mnt/fast_scratch/postgreSQL-server/data/postgres`. Backups go to `/mnt/arkk/postgreSQL-server/backups` on the RAID5 array.
 
 ## Setup instructions
 
@@ -275,7 +279,7 @@ If students need a collaborative database they can all access:
 
 ### Step 7: Set up backups
 
-1. Edit `scripts/backup.sh` and update `BACKUP_DIR` to your desired backup path.
+1. Backups default to `/mnt/arkk/postgreSQL-server/backups` on the RAID5 array (`make backup-all`, `make create-backup`, and `scripts/backup.sh` all use it). Override per run with `BACKUP_DIR=/some/path make backup-all` or by exporting `BACKUP_DIR` before running `scripts/backup.sh`.
 
 2. Test backup:
 
@@ -365,6 +369,17 @@ docker logs -f postgres
 docker compose restart
 ```
 
+### Using pgAdmin
+
+pgAdmin runs at <http://100.64.0.2:8088> (Tailscale only). Log in with:
+
+- Email: `admin@pyrite.lan`
+- Password: value of `PGADMIN_DEFAULT_PASSWORD` in `.env`
+
+The `Local PostgreSQL` server is registered automatically from `config/pgadmin/servers.json` (host `postgres` on the Compose network, user `admin`). pgAdmin 9.x reloads that file on every start via `PGADMIN_REPLACE_SERVERS_ON_STARTUP`, so the definition is reapplied even when the `pgadmin-data` volume already exists. Any servers added manually in the UI will be removed on the next container start.
+
+Passwords cannot be imported through `servers.json`. On first connect, enter the value of `POSTGRES_ADMIN_PASSWORD` from `.env` when prompted, and save it in pgAdmin if desired.
+
 ### Manual backup
 
 ```bash
@@ -398,6 +413,34 @@ GRANT CONNECT ON DATABASE newuser_db TO newuser;
 GRANT students TO newuser;
 EOF
 ```
+
+## Moving the data directory
+
+`docker-compose.yml` bind-mounts PGDATA from `/mnt/fast_scratch/postgreSQL-server/data/postgres`, outside the checkout. If you are upgrading an existing deployment whose data is still in `data/postgres` inside the repository, copy it once while the stack is stopped. Run these from the deployed checkout (e.g. `/opt/postgreSQL-server`), adjusting the source path if your old checkout is elsewhere:
+
+```bash
+docker compose down
+
+sudo install -d -o 131 -g 130 -m 700 \
+  /mnt/fast_scratch/postgreSQL-server/data/postgres
+sudo rsync -aHAX --numeric-ids \
+  /opt/postgreSQL-server/data/postgres/ \
+  /mnt/fast_scratch/postgreSQL-server/data/postgres/
+
+docker compose up -d
+```
+
+The UID/GID above are the `postgres` account (`131:130`); `rsync -aHAX --numeric-ids` preserves ownership, permissions, and extended attributes, including the `pg_log` directory.
+
+Verify before removing the old copy:
+
+```bash
+docker compose ps
+docker exec postgres psql -U admin -d postgres -tAc 'SELECT count(*) FROM pg_database'
+make db-count
+```
+
+The pgAdmin volume needs no migration: Docker's data root is already `/mnt/fast_scratch/docker`.
 
 ## Monitoring
 
