@@ -5,11 +5,20 @@
 include .env
 export
 
-# Configuration
-DB_HOST ?= 100.64.0.2
+# Site-specific settings come from .env (see .env.template). Fail fast if missing.
+ifeq ($(strip $(POSTGRES_ADMIN_PASSWORD)),)
+$(error POSTGRES_ADMIN_PASSWORD is not set in .env - copy .env.template to .env and fill it in)
+endif
+ifeq ($(strip $(DB_HOST)),)
+$(error DB_HOST is not set in .env - copy .env.template to .env and fill it in)
+endif
+ifeq ($(strip $(BACKUP_DIR)),)
+$(error BACKUP_DIR is not set in .env - copy .env.template to .env and fill it in)
+endif
+
+# Configuration (protocol defaults; may also be set in .env)
 DB_PORT ?= 5432
 DB_USER ?= admin
-BACKUP_DIR ?= /mnt/arkk/postgreSQL-server/backups
 PSQL = PGPASSWORD="$(POSTGRES_ADMIN_PASSWORD)" psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) --pset=pager=off
 
 .PHONY: help list-databases list-tables list-users list-connections \
@@ -21,6 +30,8 @@ PSQL = PGPASSWORD="$(POSTGRES_ADMIN_PASSWORD)" psql -h $(DB_HOST) -p $(DB_PORT) 
 help:
 	@echo "PostgreSQL Administration Commands"
 	@echo "=================================="
+	@echo ""
+	@echo "Configuration: copy .env.template to .env and fill in every value"
 	@echo ""
 	@echo "Database Info:"
 	@echo "  make list-databases        List all databases"

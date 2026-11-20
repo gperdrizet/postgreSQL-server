@@ -1,23 +1,14 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/load-env.sh
+. "$SCRIPT_DIR/lib/load-env.sh"
+
 # Configuration
-ADMIN_USER="admin"
-DB_HOST="100.64.0.2"
-DB_PORT="5432"
 PASSWORD_LENGTH=16
 STUDENTS_FILE="${1:-./credentials/students.txt}"
 FAILED_STUDENTS=0
 umask 077
-
-# Load admin password from .env
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
-fi
-
-if [ -z "$POSTGRES_ADMIN_PASSWORD" ]; then
-    echo "Error: POSTGRES_ADMIN_PASSWORD not set. Create .env file first."
-    exit 1
-fi
 
 # Check if students file exists
 if [ ! -f "$STUDENTS_FILE" ]; then
@@ -67,7 +58,7 @@ while IFS= read -r USERNAME || [ -n "$USERNAME" ]; do
     echo "Creating user and database for $USERNAME..."
     
     # Create user and database
-    PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -X -w -v ON_ERROR_STOP=1 -h "$DB_HOST" -p "$DB_PORT" -U "$ADMIN_USER" -d postgres <<EOF
+    PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -X -w -v ON_ERROR_STOP=1 -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres <<EOF
 -- Create user
 CREATE USER "$USERNAME" WITH PASSWORD '$PASSWORD' 
     CONNECTION LIMIT 3

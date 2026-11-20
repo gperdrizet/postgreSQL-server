@@ -1,20 +1,11 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/load-env.sh
+. "$SCRIPT_DIR/lib/load-env.sh"
+
 # Configuration
-ADMIN_USER="admin"
-DB_HOST="100.64.0.2"
-DB_PORT="5432"
 SHARED_DB_NAME="${1:-shared_project}"
-
-# Load admin password from .env
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
-fi
-
-if [ -z "$POSTGRES_ADMIN_PASSWORD" ]; then
-    echo "Error: POSTGRES_ADMIN_PASSWORD not set. Create .env file first."
-    exit 1
-fi
 
 echo "=========================================="
 echo "Setting up shared database: $SHARED_DB_NAME"
@@ -22,7 +13,7 @@ echo "=========================================="
 echo ""
 
 # Create the shared database and configure permissions
-PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $ADMIN_USER -d postgres <<EOF
+PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres <<EOF
 -- Create the shared database if it doesn't exist
 SELECT 'CREATE DATABASE $SHARED_DB_NAME'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$SHARED_DB_NAME')\gexec
@@ -52,7 +43,7 @@ fi
 echo "✓ Database and role created"
 
 # Configure permissions on the shared database
-PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $ADMIN_USER -d $SHARED_DB_NAME <<EOF
+PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $SHARED_DB_NAME <<EOF
 
 -- Grant schema permissions
 GRANT ALL ON SCHEMA public TO students;
@@ -81,7 +72,7 @@ echo "✓ Permissions configured"
 echo ""
 echo "Adding existing student users to the students role..."
 
-STUDENT_USERS=$(PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $ADMIN_USER -d postgres -t -c "
+STUDENT_USERS=$(PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -t -c "
     SELECT r.rolname 
     FROM pg_roles r
     WHERE EXISTS (
@@ -101,7 +92,7 @@ else
     echo "Found $NUM_STUDENTS student user(s):"
     
     for USERNAME in $STUDENT_USERS; do
-        PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $ADMIN_USER -d postgres -c "GRANT students TO $USERNAME;" > /dev/null 2>&1
+        PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d postgres -c "GRANT students TO $USERNAME;" > /dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo "  ✓ $USERNAME"
         else

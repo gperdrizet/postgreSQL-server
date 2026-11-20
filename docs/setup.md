@@ -24,19 +24,19 @@ A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tail
                                                           your-domain:54321
 ```
 
-Monitoring is centralized on the VPS: the local `postgres-exporter` (`100.64.0.2:9187`) is scraped by gatekeeper's Prometheus (job `pyrite-postgres-exporter`), and dashboards live in the central Grafana (`postgres-main-overview`). No local Prometheus or Grafana service runs in this stack.
+Monitoring is centralized on the VPS: the local `postgres-exporter` (`$TAILSCALE_IP:9187`) is scraped by gatekeeper's Prometheus (job `pyrite-postgres-exporter`), and dashboards live in the central Grafana (`postgres-main-overview`). No local Prometheus or Grafana service runs in this stack.
 
 ## Components
 
 | Component | Location | Purpose |
 | --------- | -------- | ------- |
 | PostgreSQL 16 | Local (Docker) | Database server |
-| `postgres-exporter` | Local (Docker) | Exposes metrics on `100.64.0.2:9187` |
+| `postgres-exporter` | Local (Docker) | Exposes metrics on `$TAILSCALE_IP:9187` |
 | Tailscale | Local ↔ VPS | Encrypted tunnel |
 | NGINX Stream | VPS | TCP/SSL proxy |
 | Prometheus | VPS (`gatekeeper`) | Scrapes and stores metrics |
 | Grafana | VPS (`gatekeeper`) | Dashboards (`postgres-main-overview`) |
-| pgAdmin | Local (Docker) | Web UI at `100.64.0.2:8088`; server pre-registered |
+| pgAdmin | Local (Docker) | Web UI at `$TAILSCALE_IP:8088`; server pre-registered |
 | Backup Scripts | Local | Automated backups |
 
 ## Directory structure
@@ -44,7 +44,8 @@ Monitoring is centralized on the VPS: the local `postgres-exporter` (`100.64.0.2
 ```text
 postgresSQL-server/
 ├── docker-compose.yml            # PostgreSQL + postgres-exporter + pgAdmin
-├── .env                          # Admin credentials (git-ignored)
+├── .env.template                 # Copy to .env and fill in every value
+├── .env                          # Local configuration (git-ignored)
 ├── .gitignore
 ├── config/
 │   ├── postgresql.conf           # PostgreSQL server configuration
@@ -68,7 +69,8 @@ postgresSQL-server/
 │   ├── loadtest.sh               # Load testing with pgbench
 │   ├── setup_shared_database.sh  # Create shared access database for users
 │   ├── setup-backup-cron.sh      # Install backup cron job
-│   └── setup-startup-service.sh  # Creates and installs systemd unit for Docker stack
+│   ├── setup-startup-service.sh  # Creates and installs systemd unit for Docker stack
+│   └── lib/load-env.sh           # Shared .env loader/validator
 │
 ├── vps/
 │   └── nginx-stream.conf         # NGINX stream config for the VPS
@@ -81,7 +83,7 @@ postgresSQL-server/
     └── postgres/
 ```
 
-The live PostgreSQL data directory is **not** inside the checkout: it is bind-mounted from `/mnt/fast_scratch/postgreSQL-server/data/postgres`. Backups go to `/mnt/arkk/postgreSQL-server/backups` on the RAID5 array.
+The PostgreSQL data directory is **not** inside the checkout: it is bind-mounted from `$PGDATA_DIR` (fast local storage). Backups go to `$BACKUP_DIR` (a separate disk or array). Both are set in `.env`.
 
 ## Setup instructions
 
@@ -94,13 +96,34 @@ The live PostgreSQL data directory is **not** inside the checkout: it is bind-mo
 
 ### Step 1: Configure environment
 
-Create a `.env` file in the project root:
+Copy the template and fill in every value. None of the settings are optional — Compose and the scripts fail fast when one is missing.
 
 ```bash
-# Generate both required passwords (Grafana runs on the VPS, not here)
-echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
-echo "PGADMIN_DEFAULT_PASSWORD=$(openssl rand -base64 32)" >> .env
+cp .env.template .env
+openssl rand -base64 32   # paste into POSTGRES_ADMIN_PASSWORD
+openssl rand -base64 32   # paste into PGADMIN_DEFAULT_PASSWORD
 ```
+
+| Variable | Purpose | Example |
+| -------- | ------- | ------- |
+| `POSTGRES_ADMIN_PASSWORD` | PostgreSQL `admin` password | (generated) |
+| `PGADMIN_DEFAULT_PASSWORD` | pgAdmin login password | (generated) |
+| `PGADMIN_DEFAULT_EMAIL` | pgAdmin login email | `admin@example.lan` |
+| `TAILSCALE_IP` | Tailscale IP of this host; where 5432, 9187 and 8088 are published | `100.64.0.2` |
+| `DB_HOST` | Host used by the Makefile and scripts | `100.64.0.2` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_USER` | PostgreSQL admin user | `admin` |
+| `PGDATA_DIR` | Absolute path to the PostgreSQL data directory | `/mnt/fast_scratch/postgreSQL-server/data/postgres` |
+| `BACKUP_DIR` | Absolute path for backups | `/mnt/arkk/postgreSQL-server/backups` |
+
+Create `PGDATA_DIR` before starting the stack, owned by the `postgres` user from the image (UID/GID 999 in `pgvector/pgvector:pg16`; verify with `docker run --rm --entrypoint id pgvector/pgvector:pg16 postgres`):
+
+```bash
+source .env
+sudo install -d -o 999 -g 999 -m 700 "$PGDATA_DIR"
+```
+
+Set `<db-host-tailscale-ip>` in `vps/nginx-stream.conf` to the same value as `TAILSCALE_IP`.
 
 ### Step 2: Set up Tailscale
 
@@ -231,7 +254,7 @@ If students need a collaborative database they can all access:
 
    ```bash
    source .env
-   PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -h 100.64.0.2 -U admin -d postgres
+   PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -d postgres
    ```
 
 2. Run the following SQL (replace `your_database_name` with your desired name):
@@ -279,7 +302,7 @@ If students need a collaborative database they can all access:
 
 ### Step 7: Set up backups
 
-1. Backups default to `/mnt/arkk/postgreSQL-server/backups` on the RAID5 array (`make backup-all`, `make create-backup`, and `scripts/backup.sh` all use it). Override per run with `BACKUP_DIR=/some/path make backup-all` or by exporting `BACKUP_DIR` before running `scripts/backup.sh`.
+1. Backups go to `$BACKUP_DIR` (a separate disk or array); `make backup-all`, `make create-backup`, and `scripts/backup.sh` all read it from `.env`. Override per run with `BACKUP_DIR=/some/path make backup-all` or by exporting `BACKUP_DIR` before running `scripts/backup.sh`.
 
 2. Test backup:
 
@@ -371,9 +394,9 @@ docker compose restart
 
 ### Using pgAdmin
 
-pgAdmin runs at <http://100.64.0.2:8088> (Tailscale only). Log in with:
+pgAdmin runs at `http://$TAILSCALE_IP:8088` (Tailscale only). Log in with:
 
-- Email: `admin@pyrite.lan`
+- Email: value of `PGADMIN_DEFAULT_EMAIL` in `.env`
 - Password: value of `PGADMIN_DEFAULT_PASSWORD` in `.env`
 
 The `Local PostgreSQL` server is registered automatically from `config/pgadmin/servers.json` (host `postgres` on the Compose network, user `admin`). pgAdmin 9.x reloads that file on every start via `PGADMIN_REPLACE_SERVERS_ON_STARTUP`, so the definition is reapplied even when the `pgadmin-data` volume already exists. Any servers added manually in the UI will be removed on the next container start.
@@ -416,31 +439,32 @@ EOF
 
 ## Moving the data directory
 
-`docker-compose.yml` bind-mounts PGDATA from `/mnt/fast_scratch/postgreSQL-server/data/postgres`, outside the checkout. If you are upgrading an existing deployment whose data is still in `data/postgres` inside the repository, copy it once while the stack is stopped. Run these from the deployed checkout (e.g. `/opt/postgreSQL-server`), adjusting the source path if your old checkout is elsewhere:
+`docker-compose.yml` bind-mounts PGDATA from `$PGDATA_DIR` (set in `.env`), outside the checkout. If you are upgrading an existing deployment whose data is still inside the repository, copy it once while the stack is stopped. Run these from the deployed checkout, with `SRC` pointing at the old data directory (for example `<checkout-dir>/data/postgres`):
 
 ```bash
+source .env
+SRC=/path/to/old/data/postgres
+
 docker compose down
 
-sudo install -d -o 131 -g 130 -m 700 \
-  /mnt/fast_scratch/postgreSQL-server/data/postgres
-sudo rsync -aHAX --numeric-ids \
-  /opt/postgreSQL-server/data/postgres/ \
-  /mnt/fast_scratch/postgreSQL-server/data/postgres/
+sudo install -d -m 700 "$PGDATA_DIR"
+sudo chown --reference="$SRC" "$PGDATA_DIR"
+sudo rsync -aHAX --numeric-ids "$SRC/" "$PGDATA_DIR/"
 
 docker compose up -d
 ```
 
-The UID/GID above are the `postgres` account (`131:130`); `rsync -aHAX --numeric-ids` preserves ownership, permissions, and extended attributes, including the `pg_log` directory.
+`chown --reference` copies the owner/group from the old directory (UID/GID 999 for `postgres` in the `pgvector` image), and `rsync -aHAX --numeric-ids` preserves ownership, permissions, and extended attributes, including `pg_log`.
 
 Verify before removing the old copy:
 
 ```bash
 docker compose ps
-docker exec postgres psql -U admin -d postgres -tAc 'SELECT count(*) FROM pg_database'
+docker exec postgres psql -U "$DB_USER" -d postgres -tAc 'SELECT count(*) FROM pg_database'
 make db-count
 ```
 
-The pgAdmin volume needs no migration: Docker's data root is already `/mnt/fast_scratch/docker`.
+The pgAdmin volume needs no migration: it lives in Docker's data root (`docker info --format '{{.DockerRootDir}}'`).
 
 ## Monitoring
 
@@ -448,13 +472,13 @@ Monitoring runs on the VPS (`gatekeeper`); this project only runs the exporter, 
 
 | Component | Location | Details |
 | --------- | -------- | ------- |
-| `postgres-exporter` | Local Docker | `100.64.0.2:9187` (Tailscale only) |
+| `postgres-exporter` | Local Docker | `$TAILSCALE_IP:9187` (Tailscale only) |
 | Prometheus | VPS (`gatekeeper`) | Scrapes job `pyrite-postgres-exporter` |
 | Grafana | VPS (`gatekeeper`) | Dashboard `postgres-main-overview` |
 
 There is no local Prometheus (`:9090`) or Grafana (`:3000`) service. `docker compose up -d` starts PostgreSQL, `postgres-exporter`, and pgAdmin only.
 
-The exporter must remain reachable from gatekeeper over Tailscale on port 9187 for metrics to keep flowing.
+The exporter must remain reachable from the VPS over Tailscale on port 9187 for metrics to keep flowing.
 
 ### Pre-configured dashboard
 
@@ -561,27 +585,29 @@ docker exec -it postgres pgbench ...
 
 ### Using the load test script
 
+The script loads `.env` itself; `PGPASSWORD` defaults to `POSTGRES_ADMIN_PASSWORD`.
+
 ```bash
 # Initialize test tables (required before first test)
-PGPASSWORD=your_password ./scripts/loadtest.sh init
+./scripts/loadtest.sh init
 
 # Single user hammering the server (60 seconds)
-PGPASSWORD=your_password ./scripts/loadtest.sh single
+./scripts/loadtest.sh single
 
 # Multiple users (20 clients, 4 threads, 60 seconds)
-PGPASSWORD=your_password ./scripts/loadtest.sh multi
+./scripts/loadtest.sh multi
 
 # Stress test (50 clients, 8 threads, 120 seconds)
-PGPASSWORD=your_password ./scripts/loadtest.sh stress
+./scripts/loadtest.sh stress
 
 # Read-only test (SELECT queries only)
-PGPASSWORD=your_password ./scripts/loadtest.sh readonly
+./scripts/loadtest.sh readonly
 
 # Custom duration/parameters
-PGPASSWORD=your_password ./scripts/loadtest.sh multi 30 4 90
+./scripts/loadtest.sh multi 30 4 90
 
 # Clean up test tables when done
-PGPASSWORD=your_password ./scripts/loadtest.sh cleanup
+./scripts/loadtest.sh cleanup
 ```
 
 ### Test types
@@ -910,10 +936,10 @@ openssl req -new -x509 -days 3650 -nodes \
   -keyout server.key \
   -subj "/CN=postgres"
 
-# Set permissions — PostgreSQL requires the key owned by UID 70 (postgres in alpine)
+# Set permissions — the postgres user in pgvector/pgvector:pg16 is UID/GID 999
 chmod 600 server.key
 chmod 644 server.crt
-sudo chown 70:70 server.key
+sudo chown 999:999 server.key
 ```
 
 The certificates live in `config/ssl/` which is excluded from git. After regenerating, restart the container:

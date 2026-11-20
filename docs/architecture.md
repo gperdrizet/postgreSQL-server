@@ -192,7 +192,7 @@ flowchart TB
     DASH --> VIS
 ```
 
-The local host only exports metrics. Prometheus (job `pyrite-postgres-exporter`) scrapes `100.64.0.2:9187` over Tailscale, and the `postgres-main-overview` dashboard lives in the central Grafana on the VPS. No Prometheus server or Grafana instance runs locally.
+The local host only exports metrics. Prometheus (job `pyrite-postgres-exporter`) scrapes `$TAILSCALE_IP:9187` over Tailscale, and the `postgres-main-overview` dashboard lives in the central Grafana on the VPS. No Prometheus server or Grafana instance runs locally.
 
 ## Viewing these diagrams
 

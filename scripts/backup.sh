@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Configuration - UPDATE THIS PATH
-BACKUP_DIR="${BACKUP_DIR:-/mnt/arkk/postgreSQL-server/backups}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/load-env.sh
+. "$SCRIPT_DIR/lib/load-env.sh"
+
+# Configuration
 DOCKER_CONTAINER="postgres"
 RETENTION_DAYS=30
 DATE=$(date +%Y-%m-%d_%H-%M-%S)

@@ -6,11 +6,14 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/load-env.sh
+. "$SCRIPT_DIR/lib/load-env.sh"
+
 # Configuration
-DB_HOST="${DB_HOST:-100.64.0.2}"
-DB_PORT="${DB_PORT:-5432}"
 DB_NAME="${DB_NAME:-postgres}"
-DB_USER="${DB_USER:-admin}"
+PGPASSWORD="${PGPASSWORD:-$POSTGRES_ADMIN_PASSWORD}"
+export PGPASSWORD
 
 # Colors for output
 RED='\033[0;31m'
@@ -233,12 +236,12 @@ usage() {
     echo "                            Run custom SQL script"
     echo "  cleanup                   Remove pgbench tables"
     echo ""
-    echo "Environment variables:"
-    echo "  PGPASSWORD    Database password (required)"
-    echo "  DB_HOST       Database host (default: 100.64.0.2)"
-    echo "  DB_PORT       Database port (default: 5432)"
+    echo "Environment variables (all host settings are loaded from .env):"
+    echo "  PGPASSWORD    Database password (defaults to POSTGRES_ADMIN_PASSWORD)"
+    echo "  DB_HOST       Database host (from .env)"
+    echo "  DB_PORT       Database port (from .env)"
     echo "  DB_NAME       Database name (default: postgres)"
-    echo "  DB_USER       Database user (default: admin)"
+    echo "  DB_USER       Database user (from .env)"
     echo ""
     echo "Examples:"
     echo "  PGPASSWORD=secret $0 init"

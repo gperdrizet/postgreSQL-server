@@ -59,10 +59,34 @@ Students connect to the VPS on `:54321`; NGINX forwards the connection over Tail
 git clone https://github.com/yourusername/postgresSQL-server.git
 cd postgresSQL-server
 
-# Generate secure passwords
-echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
-echo "PGADMIN_DEFAULT_PASSWORD=$(openssl rand -base64 32)" >> .env
+# Create your local configuration
+cp .env.template .env
+
+# Generate two passwords and paste them into .env
+openssl rand -base64 32   # POSTGRES_ADMIN_PASSWORD
+openssl rand -base64 32   # PGADMIN_DEFAULT_PASSWORD
+
+# Then fill in TAILSCALE_IP, DB_HOST, PGDATA_DIR, BACKUP_DIR and
+# PGADMIN_DEFAULT_EMAIL — see the configuration reference below.
 ```
+
+#### Configuration reference
+
+Every host-specific value lives in `.env` (start from `.env.template`). None are optional: Compose and the admin scripts stop with a clear error if a value is missing.
+
+| Variable | Purpose | Example |
+| -------- | ------- | ------- |
+| `POSTGRES_ADMIN_PASSWORD` | PostgreSQL `admin` password | (generated) |
+| `PGADMIN_DEFAULT_PASSWORD` | pgAdmin login password | (generated) |
+| `PGADMIN_DEFAULT_EMAIL` | pgAdmin login email | `admin@example.lan` |
+| `TAILSCALE_IP` | Tailscale IP of the Docker host; where 5432, 9187 and 8088 are published | `100.64.0.2` |
+| `DB_HOST` | Host the Makefile and scripts connect to | `100.64.0.2` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_USER` | PostgreSQL admin user | `admin` |
+| `PGDATA_DIR` | Absolute path to the PostgreSQL data directory | `/mnt/fast_scratch/postgreSQL-server/data/postgres` |
+| `BACKUP_DIR` | Absolute path for database backups | `/mnt/arkk/postgreSQL-server/backups` |
+
+The same `TAILSCALE_IP` must be set as the upstream in `vps/nginx-stream.conf` on the VPS, and `PGDATA_DIR` must exist before starting the stack.
 
 ### 2. Generate SSL certificates
 
@@ -75,7 +99,7 @@ openssl req -new -x509 -days 3650 -nodes \
   -out server.crt -keyout server.key -subj "/CN=postgres"
 
 # Set owner only read/write
-chmod 600 server.key && sudo chown 70:70 server.key
+chmod 600 server.key && sudo chown 999:999 server.key
 cd ../..
 ```
 
@@ -87,7 +111,7 @@ docker compose up -d
 
 ### 4. Configure NGINX on the VPS
 
-Copy `vps/nginx-stream.conf` into `/etc/nginx/nginx.conf` on the VPS (outside the `http {}` block) and reload:
+Copy `vps/nginx-stream.conf` into `/etc/nginx/nginx.conf` on the VPS (outside the `http {}` block), replace `<db-host-tailscale-ip>` in the upstream with the value of `TAILSCALE_IP`, then reload:
 
 ```bash
 ssh <your-vps> "sudo nginx -t && sudo systemctl reload nginx"
@@ -118,7 +142,7 @@ Monitoring is centralized on the VPS (`gatekeeper`); this host only exposes metr
 
 | Component | Location | Details |
 | --------- | -------- | ------- |
-| `postgres-exporter` | Local Docker | `100.64.0.2:9187` (Tailscale only) |
+| `postgres-exporter` | Local Docker | `$TAILSCALE_IP:9187` (Tailscale only) |
 | Prometheus | VPS (`gatekeeper`) | Scrapes job `pyrite-postgres-exporter` |
 | Grafana | VPS (`gatekeeper`) | Dashboard `postgres-main-overview` |
 
@@ -144,13 +168,13 @@ make shell DB=mydb     # Open psql shell
 make backup-all        # Backup all databases
 ```
 
-pgAdmin is available at `http://100.64.0.2:8088` (Tailscale only). Log in with `admin@pyrite.lan` and `PGADMIN_DEFAULT_PASSWORD`; the local PostgreSQL server is registered automatically from `config/pgadmin/servers.json`. pgAdmin cannot import passwords, so enter `POSTGRES_ADMIN_PASSWORD` the first time you connect (and save it if you wish).
+pgAdmin is available at `http://$TAILSCALE_IP:8088` (Tailscale only). Log in with `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`; the local PostgreSQL server is registered automatically from `config/pgadmin/servers.json`. pgAdmin cannot import passwords, so enter `POSTGRES_ADMIN_PASSWORD` the first time you connect (and save it if you wish).
 
 ## Data and backups
 
-- PostgreSQL data lives outside the checkout at `/mnt/fast_scratch/postgreSQL-server/data/postgres` (bcache-backed NVMe), so moving the repository does not move the databases.
-- Backups are written to `/mnt/arkk/postgreSQL-server/backups` (RAID5) by both `make backup-all` and `scripts/backup.sh`. Override with `BACKUP_DIR=/some/path make ...`.
-- The pgAdmin state volume is already on `/mnt/fast_scratch` via Docker's data root.
+- PostgreSQL data lives outside the checkout at `$PGDATA_DIR` (fast local disk), so moving the repository does not move the databases.
+- Backups are written to `$BACKUP_DIR` (a separate disk or array) by both `make backup-all` and `scripts/backup.sh`. Override per run with `BACKUP_DIR=/some/path make ...`.
+- The pgAdmin state is a Docker named volume; it lives wherever Docker's data root points (`docker info --format '{{.DockerRootDir}}'`).
 
 See the [setup guide](docs/setup.md#moving-the-data-directory) for the one-time data migration procedure.
 
@@ -175,11 +199,13 @@ make disable-startup-on-boot
 Verify your setup can handle your expected load:
 
 ```bash
+# The script loads .env itself (PGPASSWORD defaults to POSTGRES_ADMIN_PASSWORD)
+
 # Initialize test data
-source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh init
+./scripts/loadtest.sh init
 
 # Test with 20 concurrent users
-source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh multi 20 4 60
+./scripts/loadtest.sh multi 20 4 60
 ```
 
 ## Project structure
@@ -187,6 +213,7 @@ source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh multi
 ```text
 postgresSQL-server/
 ├── docker-compose.yml        # PostgreSQL + postgres-exporter + pgAdmin
+├── .env.template             # Copy to .env and fill in every value
 ├── Makefile                  # Admin commands
 ├── mkdocs.yml                # Documentation site config
 ├── config/
@@ -197,7 +224,8 @@ postgresSQL-server/
 ├── scripts/
 │   ├── create_students.sh    # User/database creation
 │   ├── loadtest.sh           # Performance testing
-│   └── backup.sh             # Automated backups
+│   ├── backup.sh             # Automated backups
+│   └── lib/load-env.sh       # Shared .env loader/validator
 ├── vps/
 │   └── nginx-stream.conf     # NGINX stream config for the VPS
 └── docs/

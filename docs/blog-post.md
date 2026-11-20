@@ -58,7 +58,7 @@ WireGuard creates an encrypted tunnel between them.
 
 ### Monitoring
 - **Prometheus + Grafana** on the VPS (`gatekeeper`), not on the database host
-- **postgres_exporter** on the home server (`100.64.0.2:9187`), scraped over Tailscale
+- **postgres_exporter** on the home server (`<db-host-tailscale-ip>:9187`), scraped over Tailscale
 - Job `pyrite-postgres-exporter`, dashboard `postgres-main-overview`
 
 ### Automation
@@ -135,8 +135,8 @@ apt install wireguard nginx
 git clone https://github.com/yourusername/postgresSQL-server.git
 cd postgresSQL-server
 
-# Set passwords
-echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
+# Create your configuration and fill in every value
+cp .env.template .env
 
 # Start everything
 docker compose up -d
