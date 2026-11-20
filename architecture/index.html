@@ -790,7 +790,7 @@
     STORE --&gt; DASH
     STORE --&gt; ALERT
     DASH --&gt; VIS</code></pre>
-<p>The local host only exports metrics. Prometheus (job <code>pyrite-postgres-exporter</code>) scrapes <code>100.64.0.2:9187</code> over Tailscale, and the <code>postgres-main-overview</code> dashboard lives in the central Grafana on the VPS. No Prometheus server or Grafana instance runs locally.</p>
+<p>The local host only exports metrics. Prometheus (job <code>pyrite-postgres-exporter</code>) scrapes <code>$TAILSCALE_IP:9187</code> over Tailscale, and the <code>postgres-main-overview</code> dashboard lives in the central Grafana on the VPS. No Prometheus server or Grafana instance runs locally.</p>
 <h2 id="viewing-these-diagrams">Viewing these diagrams<a class="headerlink" href="#viewing-these-diagrams" title="Permanent link">&para;</a></h2>
 <p>These Mermaid diagrams render automatically on:
 - GitHub (README, markdown files)

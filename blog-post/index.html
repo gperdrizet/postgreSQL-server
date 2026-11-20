@@ -1097,7 +1097,7 @@
 <h3 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Prometheus + Grafana</strong> on the VPS (<code>gatekeeper</code>), not on the database host</li>
-<li><strong>postgres_exporter</strong> on the home server (<code>100.64.0.2:9187</code>), scraped over Tailscale</li>
+<li><strong>postgres_exporter</strong> on the home server (<code>&lt;db-host-tailscale-ip&gt;:9187</code>), scraped over Tailscale</li>
 <li>Job <code>pyrite-postgres-exporter</code>, dashboard <code>postgres-main-overview</code></li>
 </ul>
 <h3 id="automation">Automation<a class="headerlink" href="#automation" title="Permanent link">&para;</a></h3>
@@ -1175,8 +1175,8 @@
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yourusername/postgresSQL-server.git
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nb">cd</span><span class="w"> </span>postgresSQL-server
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Set passwords</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"POSTGRES_ADMIN_PASSWORD=</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">"</span><span class="w"> </span>&gt;<span class="w"> </span>.env
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Create your configuration and fill in every value</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>cp<span class="w"> </span>.env.template<span class="w"> </span>.env
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Start everything</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
