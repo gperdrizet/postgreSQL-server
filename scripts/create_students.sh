@@ -2,10 +2,12 @@
 
 # Configuration
 ADMIN_USER="admin"
-DB_HOST="localhost"
+DB_HOST="100.64.0.2"
 DB_PORT="5432"
 PASSWORD_LENGTH=16
-STUDENTS_FILE="./credentials/students.txt"
+STUDENTS_FILE="${1:-./credentials/students.txt}"
+FAILED_STUDENTS=0
+umask 077
 
 # Load admin password from .env
 if [ -f .env ]; then
@@ -39,7 +41,10 @@ generate_password() {
 NUM_STUDENTS=$(grep -c -v '^$' "$STUDENTS_FILE")
 
 # Create CSV header
-echo "username,password,database" > "$CREDENTIALS_FILE"
+if [[ ! -s "$CREDENTIALS_FILE" ]]; then
+    echo "username,password,database" > "$CREDENTIALS_FILE"
+fi
+chmod 600 "$CREDENTIALS_FILE"
 
 echo "Creating $NUM_STUDENTS student databases and users..."
 echo ""
@@ -49,7 +54,12 @@ while IFS= read -r USERNAME || [ -n "$USERNAME" ]; do
     [[ -z "$USERNAME" || "$USERNAME" =~ ^# ]] && continue
     
     # Sanitize username: lowercase, remove spaces, keep only alphanumeric and underscore
-    USERNAME=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]_')
+    USERNAME=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]' | LC_ALL=C tr -cd 'a-z0-9_')
+    if [[ -z "$USERNAME" || ${#USERNAME} -gt 60 ]]; then
+        echo "Error: student name must normalize to 1-60 characters."
+        FAILED_STUDENTS=$((FAILED_STUDENTS + 1))
+        continue
+    fi
     
     PASSWORD=$(generate_password)
     DATABASE="${USERNAME}_db"
@@ -57,23 +67,26 @@ while IFS= read -r USERNAME || [ -n "$USERNAME" ]; do
     echo "Creating user and database for $USERNAME..."
     
     # Create user and database
-    PGPASSWORD=$POSTGRES_ADMIN_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $ADMIN_USER -d postgres <<EOF
+    PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -X -w -v ON_ERROR_STOP=1 -h "$DB_HOST" -p "$DB_PORT" -U "$ADMIN_USER" -d postgres <<EOF
 -- Create user
-CREATE USER $USERNAME WITH PASSWORD '$PASSWORD' 
+CREATE USER "$USERNAME" WITH PASSWORD '$PASSWORD' 
     CONNECTION LIMIT 3
     NOSUPERUSER NOCREATEDB NOCREATEROLE;
 
 -- Create database owned by the user
-CREATE DATABASE $DATABASE OWNER $USERNAME;
+CREATE DATABASE "$DATABASE" OWNER "$USERNAME";
 
 -- Revoke public access
-REVOKE ALL ON DATABASE $DATABASE FROM PUBLIC;
+REVOKE ALL ON DATABASE "$DATABASE" FROM PUBLIC;
 
 -- Grant connect to owner only
-GRANT CONNECT ON DATABASE $DATABASE TO $USERNAME;
+GRANT CONNECT ON DATABASE "$DATABASE" TO "$USERNAME";
 
 -- Add to students role for shared_project access
-GRANT students TO $USERNAME;
+GRANT students TO "$USERNAME";
+
+\connect "$DATABASE"
+CREATE EXTENSION IF NOT EXISTS vector;
 EOF
 
     if [ $? -eq 0 ]; then
@@ -82,6 +95,7 @@ EOF
         echo "✓ Created $USERNAME with database $DATABASE"
     else
         echo "✗ Failed to create $USERNAME"
+        FAILED_STUDENTS=$((FAILED_STUDENTS + 1))
     fi
 done < "$STUDENTS_FILE"
 
@@ -93,3 +107,7 @@ echo ""
 echo "IMPORTANT: Distribute credentials securely!"
 echo "Consider deleting this file after distribution."
 chmod 600 "$CREDENTIALS_FILE"
+if [[ "$FAILED_STUDENTS" -gt 0 ]]; then
+    echo "Error: $FAILED_STUDENTS student account(s) failed."
+    exit 1
+fi
