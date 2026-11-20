@@ -514,10 +514,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-full-monitoring" class="md-nav__link">
+  <a href="#3-centralized-monitoring" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Full monitoring
+        3. Centralized monitoring
       
     </span>
   </a>
@@ -836,10 +836,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-full-monitoring" class="md-nav__link">
+  <a href="#3-centralized-monitoring" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Full monitoring
+        3. Centralized monitoring
       
     </span>
   </a>
@@ -1076,12 +1076,12 @@
 - <strong>Total</strong>: $5/month for unlimited students</p>
 <h2 id="architecture-overview">Architecture overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Students → VPS ($5) → WireGuard Tunnel → Home Server → PostgreSQL
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                ↑
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>         NGINX TCP Proxy
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>         (no database here,
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>          just forwarding)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                ↑                            │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>         NGINX TCP Proxy                postgres-exporter
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>         Prometheus + Grafana                │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>         (no database here)      metrics scraped over tunnel
 </code></pre></div>
-<p>The VPS doesn't run the database—it's just a secure entry point. The actual PostgreSQL runs on my local machine with:
+<p>The VPS doesn't run the database—it's the public entry point and the home of Prometheus and Grafana. The actual PostgreSQL runs on my local machine with:
 - More storage
 - Better CPU
 - Zero egress costs
@@ -1096,9 +1096,9 @@
 </ul>
 <h3 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Prometheus</strong> for metrics collection</li>
-<li><strong>Grafana</strong> for dashboards</li>
-<li><strong>postgres_exporter</strong> for PostgreSQL metrics</li>
+<li><strong>Prometheus + Grafana</strong> on the VPS (<code>gatekeeper</code>), not on the database host</li>
+<li><strong>postgres_exporter</strong> on the home server (<code>100.64.0.2:9187</code>), scraped over Tailscale</li>
+<li>Job <code>pyrite-postgres-exporter</code>, dashboard <code>postgres-main-overview</code></li>
 </ul>
 <h3 id="automation">Automation<a class="headerlink" href="#automation" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1121,8 +1121,8 @@
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">GRANT</span><span class="w"> </span><span class="n">students</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">jsmith</span><span class="p">,</span><span class="w"> </span><span class="n">mgarcia</span><span class="p">,</span><span class="w"> </span><span class="n">kwilson</span><span class="p">;</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">-- Now they can all collaborate</span>
 </code></pre></div></p>
-<h3 id="3-full-monitoring">3. Full monitoring<a class="headerlink" href="#3-full-monitoring" title="Permanent link">&para;</a></h3>
-<p>Grafana shows me:
+<h3 id="3-centralized-monitoring">3. Centralized monitoring<a class="headerlink" href="#3-centralized-monitoring" title="Permanent link">&para;</a></h3>
+<p>The central Grafana dashboard shows me:
 - Active connections (who's working?)
 - Query performance (anyone running slow queries?)
 - Transaction rates (load during assignments)
@@ -1194,7 +1194,7 @@
 <ol>
 <li><strong>WireGuard is amazing</strong> - Simple, fast, "it just works"</li>
 <li><strong>Docker Compose</strong> - One command to start everything</li>
-<li><strong>Grafana provisioning</strong> - Dashboards auto-configured on startup</li>
+<li><strong>Centralized Grafana</strong> - Dashboards live on the VPS instead of the database host</li>
 <li><strong>pgbench</strong> - Essential for validating the setup</li>
 </ol>
 <h3 id="gotchas">Gotchas<a class="headerlink" href="#gotchas" title="Permanent link">&para;</a></h3>
@@ -1226,13 +1226,13 @@
 - Student creation scripts
 - Backup automation
 - Load testing scripts
-- Grafana dashboards
+- Central Grafana dashboards (on the VPS)
 - Comprehensive documentation</p>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
 <p>For $5/month, I have:
 - 30+ isolated student databases
 - Shared collaboration databases
-- Full monitoring and alerting
+- Centralized monitoring and alerting
 - Automated backups
 - Production-grade security</p>
 <p>The cloud database providers are great for many use cases, but sometimes you just need a PostgreSQL server that you control—without the enterprise price tag.</p>

@@ -459,39 +459,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#backup-flow_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Backup flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#monitoring-stack_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Monitoring stack
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#viewing-these-diagrams_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Viewing these diagrams
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -641,39 +608,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#backup-flow_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Backup flow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#monitoring-stack_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Monitoring stack
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#viewing-these-diagrams_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Viewing these diagrams
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -703,18 +637,18 @@
         Students[Students/Clients]
     end
 
-    subgraph VPS["VPS"]
+    subgraph VPS["VPS (gatekeeper)"]
         PublicIP[Public IP :54321]
         NGINX[NGINX Stream Proxy]
         TS_VPS[Tailscale node]
+        PROM[Prometheus&lt;br/&gt;job pyrite-postgres-exporter]
+        GRAF[Grafana&lt;br/&gt;postgres-main-overview]
     end
 
-    subgraph Home["Local Machine"]
+    subgraph Home["Local Machine (pyrite)"]
         TS_Local[Tailscale node]
         subgraph Docker[Docker Compose Stack]
             PG[(PostgreSQL 16&lt;br/&gt;:5432 — SSL)]
-            Prometheus[Prometheus&lt;br/&gt;:9090]
-            Grafana[Grafana&lt;br/&gt;:3000]
             Exporter[postgres_exporter&lt;br/&gt;:9187]
         end
     end
@@ -726,28 +660,32 @@
     TS_Local --&gt; PG
 
     PG --&gt; Exporter
-    Exporter --&gt; Prometheus
-    Prometheus --&gt; Grafana</code></pre>
+    Exporter --&gt;|"scrape :9187 over Tailscale"| PROM
+    PROM --&gt; GRAF</code></pre>
 <h2 id="docker-services">Docker services<a class="headerlink" href="#docker-services" title="Permanent link">&para;</a></h2>
+<p>Only PostgreSQL, <code>postgres-exporter</code>, and pgAdmin run in Docker on this host. Prometheus and Grafana run on the VPS (<code>gatekeeper</code>).</p>
 <pre class="mermaid"><code>flowchart LR
-    subgraph compose[Docker Compose]
+    subgraph compose["Docker Compose - local machine"]
         subgraph data[Data Layer]
             PG[(postgres&lt;br/&gt;PostgreSQL 16)]
         end
 
         subgraph monitoring[Monitoring Layer]
-            EXP[postgres-exporter]
-            PROM[prometheus]
-            GRAF[grafana]
+            EXP[postgres-exporter&lt;br/&gt;:9187]
         end
     end
 
+    subgraph vps["VPS - gatekeeper"]
+        PROM[Prometheus]
+        GRAF[Grafana]
+    end
+
     PG --&gt;|"metrics"| EXP
-    EXP --&gt;|"scrape :9187"| PROM
+    EXP --&gt;|"scrape :9187 over Tailscale"| PROM
     PROM --&gt;|"datasource"| GRAF
 
     EXT_DB[External Clients] --&gt;|":5432 SSL"| PG
-    EXT_GRAF[Browser] --&gt;|":3000"| GRAF</code></pre>
+    EXT_GRAF[Browser] --&gt; GRAF</code></pre>
 <h2 id="data-flow">Data flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>sequenceDiagram
     participant S as Student
@@ -818,100 +756,42 @@
     CRON[Cron Job&lt;br/&gt;Daily 2 AM] --&gt;|triggers| BACKUP</code></pre>
 <h2 id="monitoring-stack">Monitoring stack<a class="headerlink" href="#monitoring-stack" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>flowchart TB
-    subgraph PostgreSQL
-        PG[(Database)]
-        PSS[pg_stat_statements]
-        PSA[pg_stat_activity]
+    subgraph Local["Local Machine (pyrite)"]
+        subgraph PostgreSQL
+            PG[(Database)]
+            PSS[pg_stat_statements]
+            PSA[pg_stat_activity]
+        end
+
+        subgraph Exporter["postgres_exporter :9187"]
+            COLLECT[Collect Metrics]
+        end
     end
 
-    subgraph Exporter[postgres_exporter]
-        COLLECT[Collect Metrics]
-    end
+    subgraph VPS["VPS (gatekeeper)"]
+        subgraph Prometheus
+            SCRAPE[Scrape Targets&lt;br/&gt;pyrite-postgres-exporter]
+            STORE[Time Series DB]
+            ALERT[Alerting Rules]
+        end
 
-    subgraph Prometheus
-        SCRAPE[Scrape Targets]
-        STORE[Time Series DB]
-        ALERT[Alerting Rules]
-    end
-
-    subgraph Grafana
-        DASH[Dashboards]
-        VIS[Visualizations]
+        subgraph Grafana
+            DASH[Dashboards&lt;br/&gt;postgres-main-overview]
+            VIS[Visualizations]
+        end
     end
 
     PG --&gt; PSS
     PG --&gt; PSA
     PSS --&gt; COLLECT
     PSA --&gt; COLLECT
-    COLLECT --&gt; SCRAPE
+    COLLECT --&gt;|"Tailscale"| SCRAPE
     SCRAPE --&gt; STORE
     STORE --&gt; DASH
     STORE --&gt; ALERT
     DASH --&gt; VIS</code></pre>
+<p>The local host only exports metrics. Prometheus (job <code>pyrite-postgres-exporter</code>) scrapes <code>100.64.0.2:9187</code> over Tailscale, and the <code>postgres-main-overview</code> dashboard lives in the central Grafana on the VPS. No Prometheus server or Grafana instance runs locally.</p>
 <h2 id="viewing-these-diagrams">Viewing these diagrams<a class="headerlink" href="#viewing-these-diagrams" title="Permanent link">&para;</a></h2>
-<p>These Mermaid diagrams render automatically on:
-- GitHub (README, markdown files)
-- GitLab
-- Notion
-- VS Code (with Mermaid extension)</p>
-<p>Or paste into <a href="https://mermaid.live">mermaid.live</a> to view/edit.
-        string password "auto-generated"
-        int connection_limit "3"
-    }</p>
-<div class="highlight"><pre><span></span><code>USER_DB {
-    string name "username_db"
-    string owner "student"
-}
-
-SHARED_DB {
-    string name "e.g. distributed_gan"
-    string owner "admin"
-    string access "students role"
-}
-</code></pre></div>
-<p>```
-</p>
-<h2 id="backup-flow_1">Backup flow<a class="headerlink" href="#backup-flow_1" title="Permanent link">&para;</a></h2>
-<p><code>mermaid
-flowchart LR
-    PG[(PostgreSQL)] --&gt;|pg_dump| BACKUP[Backup Script]
-    BACKUP --&gt;|gzip| LOCAL[Local Storage]
-    LOCAL --&gt;|rsync| NAS[NAS/RAID]
-
-    CRON[Cron Job&lt;br/&gt;Daily 2 AM] --&gt;|triggers| BACKUP</code></p>
-<h2 id="monitoring-stack_1">Monitoring stack<a class="headerlink" href="#monitoring-stack_1" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>flowchart TB
-    subgraph PostgreSQL
-        PG[(Database)]
-        PSS[pg_stat_statements]
-        PSA[pg_stat_activity]
-    end
-
-    subgraph Exporter[postgres_exporter]
-        COLLECT[Collect Metrics]
-    end
-
-    subgraph Prometheus
-        SCRAPE[Scrape Targets]
-        STORE[Time Series DB]
-        ALERT[Alerting Rules]
-    end
-
-    subgraph Grafana
-        DASH[Dashboards]
-        VIS[Visualizations]
-    end
-
-    PG --&gt; PSS
-    PG --&gt; PSA
-    PSS --&gt; COLLECT
-    PSA --&gt; COLLECT
-    COLLECT --&gt; SCRAPE
-    SCRAPE --&gt; STORE
-    STORE --&gt; DASH
-    STORE --&gt; ALERT
-    DASH --&gt; VIS</code></pre>
-<h2 id="viewing-these-diagrams_1">Viewing these diagrams<a class="headerlink" href="#viewing-these-diagrams_1" title="Permanent link">&para;</a></h2>
 <p>These Mermaid diagrams render automatically on:
 - GitHub (README, markdown files)
 - GitLab
