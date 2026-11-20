@@ -1891,12 +1891,12 @@
 <li>Verify it's running:</li>
 </ol>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>ps
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>docker<span class="w"> </span>logs<span class="w"> </span>student-postgres
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>docker<span class="w"> </span>logs<span class="w"> </span>postgres
 </code></pre></div>
 <ol>
 <li>Test local connection:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
 </code></pre></div>
 <h3 id="step-4-configure-nginx-on-vps">Step 4: Configure NGINX on VPS<a class="headerlink" href="#step-4-configure-nginx-on-vps" title="Permanent link">&para;</a></h3>
 <ol>
@@ -2077,7 +2077,7 @@
 </code></pre></div>
 <h2 id="maintenance">Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
 <h3 id="view-logs">View logs<a class="headerlink" href="#view-logs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>student-postgres
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>postgres
 </code></pre></div>
 <h3 id="restart-database">Restart database<a class="headerlink" href="#restart-database" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>restart
@@ -2086,15 +2086,15 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>./scripts/backup.sh
 </code></pre></div>
 <h3 id="restore-from-backup">Restore from backup<a class="headerlink" href="#restore-from-backup" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>gunzip<span class="w"> </span>-c<span class="w"> </span>/path/to/backup.sql.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>gunzip<span class="w"> </span>-c<span class="w"> </span>/path/to/backup.sql.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin
 </code></pre></div>
 <h3 id="reset-student-password">Reset student password<a class="headerlink" href="#reset-student-password" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER USER student01 WITH PASSWORD 'new_password';"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"ALTER USER student01 WITH PASSWORD 'new_password';"</span>
 </code></pre></div>
 <h3 id="add-new-student">Add new student<a class="headerlink" href="#add-new-student" title="Permanent link">&para;</a></h3>
 <p>The preferred method is adding the username to <code>credentials/students.txt</code> and re-running <code>./scripts/create_students.sh</code> — it is idempotent and handles role membership automatically.</p>
 <p>To add a single student manually:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
 <a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="s">CREATE USER newuser WITH PASSWORD 'secure_password' CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;</span>
 <a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="s">CREATE DATABASE newuser_db OWNER newuser;</span>
 <a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="s">REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;</span>
@@ -2228,7 +2228,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>postgresql-contrib
 </code></pre></div>
 <p>Or run tests inside the container:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>pgbench<span class="w"> </span>...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>pgbench<span class="w"> </span>...
 </code></pre></div>
 <h3 id="using-the-load-test-script">Using the load test script<a class="headerlink" href="#using-the-load-test-script" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Initialize test tables (required before first test)</span>
@@ -2443,10 +2443,10 @@
 <a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>ps
 <a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>
 <a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="c1"># Check PostgreSQL logs</span>
-<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>docker<span class="w"> </span>logs<span class="w"> </span>student-postgres<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-30
+<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>docker<span class="w"> </span>logs<span class="w"> </span>postgres<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-30
 <a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>
 <a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a><span class="c1"># Test local PostgreSQL connection</span>
-<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
+<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-d<span class="w"> </span>postgres
 </code></pre></div>
 <h3 id="cannot-connect-to-database">Cannot connect to database<a class="headerlink" href="#cannot-connect-to-database" title="Permanent link">&para;</a></h3>
 <h4 id="symptom-connection-timed-out">Symptom: Connection timed out<a class="headerlink" href="#symptom-connection-timed-out" title="Permanent link">&para;</a></h4>
@@ -2466,7 +2466,7 @@
 <ol>
 <li>Check NGINX stream error log: <code>ssh &lt;your-vps&gt; "sudo tail -20 /var/log/nginx/stream_error.log"</code></li>
 <li>Test Tailscale connectivity from VPS: <code>ssh &lt;your-vps&gt; "nc -zv &lt;local-tailscale-ip&gt; 5432"</code></li>
-<li>Check PostgreSQL logs: <code>docker logs student-postgres 2&gt;&amp;1 | tail -30</code></li>
+<li>Check PostgreSQL logs: <code>docker logs postgres 2&gt;&amp;1 | tail -30</code></li>
 <li>Verify pg_hba.conf allows connections from Tailscale network (<code>100.64.0.0/10</code>)</li>
 </ol>
 <h3 id="tailscale-connectivity-issues">Tailscale connectivity issues<a class="headerlink" href="#tailscale-connectivity-issues" title="Permanent link">&para;</a></h3>
@@ -2520,12 +2520,12 @@
 <li>Verify username and password are correct</li>
 <li>Check if user exists:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\du"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\du"</span>
 </code></pre></div>
 <ol>
 <li>Check if database exists:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>student-postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\l"</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>admin<span class="w"> </span>-c<span class="w"> </span><span class="s2">"\\l"</span>
 </code></pre></div>
 <hr />
 <h2 id="ssl-certificate-setup">SSL certificate setup<a class="headerlink" href="#ssl-certificate-setup" title="Permanent link">&para;</a></h2>
