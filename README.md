@@ -4,7 +4,7 @@ A complete, production-ready PostgreSQL setup for educators, indie developers, a
 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
-[![Grafana](https://img.shields.io/badge/Grafana-Monitoring-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
+[![Monitoring](https://img.shields.io/badge/Monitoring-Prometheus%20%2B%20Grafana-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## Why this project?
@@ -23,7 +23,7 @@ This project lets you run a **secure, monitored, production-grade database** on 
 | Feature | Description |
 | ------- | ----------- |
 | **Secure by default** | Tailscale tunnel, SSL/TLS, per-user isolation |
-| **Full monitoring** | Grafana dashboards, Prometheus metrics |
+| **Centralized monitoring** | Local postgres-exporter scraped by VPS Prometheus; dashboards in central Grafana |
 | **Multi-tenant** | Individual + shared databases for collaboration |
 | **Vector search** | pgvector for embeddings and similarity search |
 | **Load tested** | Proven for 30+ concurrent users |
@@ -33,22 +33,16 @@ This project lets you run a **secure, monitored, production-grade database** on 
 ## Architecture
 
 ```text
-┌─────────────────────┐         Tailscale Tunnel        ┌─────────────────────┐
-│   LOCAL MACHINE     │◄───────────────────────────────►│        VPS          │
-│                     │      (encrypted, persistent)    │                     │
-│  ┌───────────────┐  │                                 │  ┌───────────────┐  │
-│  │ Docker        │  │                                 │  │ NGINX Stream  │  │
-│  │ ├─ PostgreSQL │  │                                 │  │ (TCP Proxy)   │  │
-│  │ ├─ Prometheus │  │                                 │  │ :54321        │  │
-│  │ └─ Grafana    │  │                                 │  └───────────────┘  │
-│  └───────────────┘  │                                 │                     │
-│                     │                                 │ Public IP: x.x.x.x  │
-│ Tailscale: <local>  │                                 │  Tailscale: <vps>   │
-└─────────────────────┘                                 └─────────────────────┘
-                                                                  ▲
-                                                        Students/clients
-                                                        connect here
+   LOCAL MACHINE (pyrite)                    VPS (gatekeeper)
+  ┌────────────────────────┐                ┌────────────────────────┐
+  │ Docker                 │                │ NGINX stream proxy     │
+  │  ├─ PostgreSQL :5432   │◄── Tailscale ──│ :54321 → local :5432   │
+  │  └─ postgres-exporter  │──── metrics ──►│ Prometheus (scraper)   │
+  │     :9187              │    :9187       │ Grafana (dashboards)   │
+  └────────────────────────┘                └────────────────────────┘
 ```
+
+Students connect to the VPS on `:54321`; NGINX forwards the connection over Tailscale to local PostgreSQL. The VPS hosts the monitoring stack; this machine only exposes metrics. There is no local Prometheus or Grafana service.
 
 ## Quick start
 
@@ -67,7 +61,7 @@ cd postgresSQL-server
 
 # Generate secure passwords
 echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
-echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)" >> .env
+echo "PGADMIN_DEFAULT_PASSWORD=$(openssl rand -base64 32)" >> .env
 ```
 
 ### 2. Generate SSL certificates
@@ -120,9 +114,17 @@ See [Setup guide](docs/setup.md) for complete instructions including Tailscale a
 
 ## Monitoring
 
-Access Grafana at `http://localhost:3000` (login: `admin` / value of `GRAFANA_ADMIN_PASSWORD`).
+Monitoring is centralized on the VPS (`gatekeeper`); this host only exposes metrics.
 
-**Pre-configured dashboard shows:**
+| Component | Location | Details |
+| --------- | -------- | ------- |
+| `postgres-exporter` | Local Docker | `100.64.0.2:9187` (Tailscale only) |
+| Prometheus | VPS (`gatekeeper`) | Scrapes job `pyrite-postgres-exporter` |
+| Grafana | VPS (`gatekeeper`) | Dashboard `postgres-main-overview` |
+
+There is no local Prometheus (`:9090`) or Grafana (`:3000`) service.
+
+**The central dashboard shows:**
 
 - Active/idle connections
 - Transaction rates
@@ -174,15 +176,13 @@ source .env && PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" ./scripts/loadtest.sh multi
 
 ```text
 postgresSQL-server/
-├── docker-compose.yml        # PostgreSQL + monitoring stack
+├── docker-compose.yml        # PostgreSQL + postgres-exporter + pgAdmin
 ├── Makefile                  # Admin commands
 ├── mkdocs.yml                # Documentation site config
 ├── config/
 │   ├── postgresql.conf       # Database configuration
 │   ├── pg_hba.conf           # Authentication rules
-│   ├── prometheus.yml        # Metrics collection
-│   ├── ssl/                  # SSL certificates (git-ignored)
-│   └── grafana/              # Dashboard provisioning
+│   └── ssl/                  # SSL certificates (git-ignored)
 ├── scripts/
 │   ├── create_students.sh    # User/database creation
 │   ├── loadtest.sh           # Performance testing
@@ -237,6 +237,6 @@ Built with:
 - [PostgreSQL](https://www.postgresql.org/) - The database
 - [pgvector](https://github.com/pgvector/pgvector) - Vector similarity search extension
 - [Tailscale](https://tailscale.com/) - VPN mesh network
-- [Grafana](https://grafana.com/) - Monitoring dashboards
-- [Prometheus](https://prometheus.io/) - Metrics collection
+- [Grafana](https://grafana.com/) - Centralized dashboards (VPS)
+- [Prometheus](https://prometheus.io/) - Centralized metrics collection (VPS)
 - [Docker](https://www.docker.com/) - Containerization

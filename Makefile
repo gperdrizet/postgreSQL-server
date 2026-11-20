@@ -6,14 +6,14 @@ include .env
 export
 
 # Configuration
-DB_HOST ?= localhost
+DB_HOST ?= 100.64.0.2
 DB_PORT ?= 5432
 DB_USER ?= admin
 PSQL = PGPASSWORD="$(POSTGRES_ADMIN_PASSWORD)" psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) --pset=pager=off
 
 .PHONY: help list-databases list-tables list-users list-connections \
 	drop-database drop-table create-backup restore-backup \
-	db-size table-sizes vacuum check-health shell grant-students-access \
+	db-size db-count table-sizes vacuum check-health shell grant-students-access \
 	setup-backup-cron enable-startup-on-boot disable-startup-on-boot
 
 # Default target
@@ -27,6 +27,7 @@ help:
 	@echo "  make list-users            List all users/roles"
 	@echo "  make list-connections      Show active connections"
 	@echo "  make db-size               Show database sizes"
+	@echo "  make db-count              Count all databases"
 	@echo "  make table-sizes DB=name   Show table sizes in a database"
 	@echo ""
 	@echo "Database Management:"
@@ -87,6 +88,10 @@ list-connections:
 db-size:
 	@echo "=== Database Sizes ==="
 	@$(PSQL) -d postgres -c "SELECT datname, pg_size_pretty(pg_database_size(datname)) as size FROM pg_database ORDER BY pg_database_size(datname) DESC;"
+
+db-count:
+	@echo "=== Database Count ==="
+	@$(PSQL) -d postgres -c "SELECT count(*) AS database_count FROM pg_database;"
 
 table-sizes:
 ifndef DB

@@ -7,7 +7,7 @@
 set -e
 
 # Configuration
-DB_HOST="${DB_HOST:-localhost}"
+DB_HOST="${DB_HOST:-100.64.0.2}"
 DB_PORT="${DB_PORT:-5432}"
 DB_NAME="${DB_NAME:-postgres}"
 DB_USER="${DB_USER:-admin}"
@@ -235,7 +235,7 @@ usage() {
     echo ""
     echo "Environment variables:"
     echo "  PGPASSWORD    Database password (required)"
-    echo "  DB_HOST       Database host (default: localhost)"
+    echo "  DB_HOST       Database host (default: 100.64.0.2)"
     echo "  DB_PORT       Database port (default: 5432)"
     echo "  DB_NAME       Database name (default: postgres)"
     echo "  DB_USER       Database user (default: admin)"

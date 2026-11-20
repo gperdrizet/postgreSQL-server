@@ -3,7 +3,7 @@
 
 ## Project: Self-hosted PostgreSQL Education Platform
 
-**Stack:** PostgreSQL 16 (Docker), per-student DBs, Prometheus+Grafana, Tailscale VPN, NGINX stream proxy.
+**Stack:** PostgreSQL 16 (Docker), per-student DBs, postgres-exporter, Tailscale VPN, NGINX stream proxy. Prometheus and Grafana are centralized on the VPS (`gatekeeper`); no local Prometheus/Grafana service exists.
 
 ---
 
@@ -32,7 +32,7 @@
 - Use `scripts/grant_distributed_gan_access.sql` as template for shared DB access
 
 ### Environment & Secrets
-- Secrets in `.env`: `POSTGRES_ADMIN_PASSWORD`, `GRAFANA_ADMIN_PASSWORD`
+- Secrets in `.env`: `POSTGRES_ADMIN_PASSWORD`, `PGADMIN_DEFAULT_PASSWORD` (plus a legacy, unused `GRAFANA_ADMIN_PASSWORD`)
 - **Never commit `.env`** or files in `credentials/students/`
 - Always `source .env` before running scripts needing credentials
 
@@ -42,11 +42,13 @@
 - Students: `NOSUPERUSER NOCREATEDB NOCREATEROLE`
 
 ### Monitoring
-- Grafana: http://localhost:3000 (admin: `GRAFANA_ADMIN_PASSWORD`)
-- Prometheus, postgres-exporter auto-started
+- Centralized on the VPS (`gatekeeper`): Prometheus job `pyrite-postgres-exporter`, Grafana dashboard `postgres-main-overview`
+- Only `postgres-exporter` runs locally, at `100.64.0.2:9187` (Tailscale only)
+- No local Prometheus (`:9090`) or Grafana (`:3000`) service
 
 ### Troubleshooting & Pitfalls
 - Must have Tailscale configured on pyrite (local) and gatekeeper (VPS) with both active on the tailnet; NGINX stream proxy must be running on VPS
+- For metrics, gatekeeper must be able to reach `100.64.0.2:9187` over Tailscale
 - Scripts require `.env` and correct permissions
 - See `SETUP.md` for full diagnostics, connection, and security troubleshooting
 

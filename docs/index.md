@@ -11,7 +11,7 @@ PostgreSQL 16 running in Docker on a local machine, exposed to the internet thro
 | Feature | Description |
 | ------- | ----------- |
 | **Secure by default** | Tailscale tunnel, SSL/TLS, per-user isolation |
-| **Full monitoring** | Grafana dashboards, Prometheus metrics |
+| **Centralized monitoring** | Local postgres-exporter scraped by VPS Prometheus; dashboards in central Grafana |
 | **Multi-tenant** | Individual databases per student + optional shared DB |
 | **Vector search** | pgvector for embeddings and similarity search |
 | **Load tested** | Proven for 30+ concurrent users |

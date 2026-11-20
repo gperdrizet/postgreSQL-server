@@ -2,7 +2,7 @@
 
 # Configuration
 ADMIN_USER="admin"
-DB_HOST="localhost"
+DB_HOST="100.64.0.2"
 DB_PORT="5432"
 SHARED_DB_NAME="${1:-shared_project}"
 

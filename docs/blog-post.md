@@ -35,13 +35,13 @@ Final cost:
 
 ```
 Students → VPS ($5) → WireGuard Tunnel → Home Server → PostgreSQL
-                ↑
-         NGINX TCP Proxy
-         (no database here,
-          just forwarding)
+                ↑                            │
+         NGINX TCP Proxy                postgres-exporter
+         Prometheus + Grafana                │
+         (no database here)      metrics scraped over tunnel
 ```
 
-The VPS doesn't run the database—it's just a secure entry point. The actual PostgreSQL runs on my local machine with:
+The VPS doesn't run the database—it's the public entry point and the home of Prometheus and Grafana. The actual PostgreSQL runs on my local machine with:
 - More storage
 - Better CPU
 - Zero egress costs
@@ -57,9 +57,9 @@ WireGuard creates an encrypted tunnel between them.
 - **NGINX Stream** module for TCP proxying
 
 ### Monitoring
-- **Prometheus** for metrics collection
-- **Grafana** for dashboards
-- **postgres_exporter** for PostgreSQL metrics
+- **Prometheus + Grafana** on the VPS (`gatekeeper`), not on the database host
+- **postgres_exporter** on the home server (`100.64.0.2:9187`), scraped over Tailscale
+- Job `pyrite-postgres-exporter`, dashboard `postgres-main-overview`
 
 ### Automation
 - Student account creation script
@@ -88,9 +88,9 @@ GRANT students TO jsmith, mgarcia, kwilson;
 -- Now they can all collaborate
 ```
 
-### 3. Full monitoring
+### 3. Centralized monitoring
 
-Grafana shows me:
+The central Grafana dashboard shows me:
 - Active connections (who's working?)
 - Query performance (anyone running slow queries?)
 - Transaction rates (load during assignments)
@@ -162,7 +162,7 @@ psql "host=yourdomain.com port=54321 dbname=jsmith_db user=jsmith sslmode=requir
 
 1. **WireGuard is amazing** - Simple, fast, "it just works"
 2. **Docker Compose** - One command to start everything
-3. **Grafana provisioning** - Dashboards auto-configured on startup
+3. **Centralized Grafana** - Dashboards live on the VPS instead of the database host
 4. **pgbench** - Essential for validating the setup
 
 ### Gotchas
@@ -193,7 +193,7 @@ Includes:
 - Student creation scripts
 - Backup automation
 - Load testing scripts
-- Grafana dashboards
+- Central Grafana dashboards (on the VPS)
 - Comprehensive documentation
 
 ## Conclusion
@@ -201,7 +201,7 @@ Includes:
 For $5/month, I have:
 - 30+ isolated student databases
 - Shared collaboration databases
-- Full monitoring and alerting
+- Centralized monitoring and alerting
 - Automated backups
 - Production-grade security
 

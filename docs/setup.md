@@ -24,32 +24,31 @@ A locally-hosted PostgreSQL database in Docker, exposed to the internet via Tail
                                                           your-domain:54321
 ```
 
+Monitoring is centralized on the VPS: the local `postgres-exporter` (`100.64.0.2:9187`) is scraped by gatekeeper's Prometheus (job `pyrite-postgres-exporter`), and dashboards live in the central Grafana (`postgres-main-overview`). No local Prometheus or Grafana service runs in this stack.
+
 ## Components
 
 | Component | Location | Purpose |
 | --------- | -------- | ------- |
 | PostgreSQL 16 | Local (Docker) | Database server |
+| `postgres-exporter` | Local (Docker) | Exposes metrics on `100.64.0.2:9187` |
 | Tailscale | Local ↔ VPS | Encrypted tunnel |
 | NGINX Stream | VPS | TCP/SSL proxy |
+| Prometheus | VPS (`gatekeeper`) | Scrapes and stores metrics |
+| Grafana | VPS (`gatekeeper`) | Dashboards (`postgres-main-overview`) |
 | Backup Scripts | Local | Automated backups |
 
 ## Directory structure
 
 ```text
 postgresSQL-server/
-├── docker-compose.yml            # PostgreSQL + monitoring stack
+├── docker-compose.yml            # PostgreSQL + postgres-exporter + pgAdmin
 ├── .env                          # Admin credentials (git-ignored)
 ├── .gitignore
 ├── config/
 │   ├── postgresql.conf           # PostgreSQL server configuration
 │   ├── pg_hba.conf               # Client authentication rules
-│   ├── prometheus.yml            # Prometheus scrape configuration
-│   ├── ssl/                      # SSL certificates (git-ignored)
-│   └── grafana/
-│       ├── provisioning/
-│       │   ├── datasources/      # Auto-configured Prometheus datasource
-│       │   └── dashboards/       # Dashboard provisioning config
-│       └── dashboards/           # Pre-built dashboard JSON files
+│   └── ssl/                      # SSL certificates (git-ignored)
 │
 ├── docs/
 │   ├── index.md                  # Documentation site home
@@ -94,9 +93,9 @@ postgresSQL-server/
 Create a `.env` file in the project root:
 
 ```bash
-# Generate both required passwords
+# Generate both required passwords (Grafana runs on the VPS, not here)
 echo "POSTGRES_ADMIN_PASSWORD=$(openssl rand -base64 32)" > .env
-echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)" >> .env
+echo "PGADMIN_DEFAULT_PASSWORD=$(openssl rand -base64 32)" >> .env
 ```
 
 ### Step 2: Set up Tailscale
@@ -228,7 +227,7 @@ If students need a collaborative database they can all access:
 
    ```bash
    source .env
-   PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -h localhost -U admin -d postgres
+   PGPASSWORD="$POSTGRES_ADMIN_PASSWORD" psql -h 100.64.0.2 -U admin -d postgres
    ```
 
 2. Run the following SQL (replace `your_database_name` with your desired name):
@@ -402,35 +401,21 @@ EOF
 
 ## Monitoring
 
-The stack includes a full monitoring solution with Prometheus, Grafana, and pg_stat_statements.
+Monitoring runs on the VPS (`gatekeeper`); this project only runs the exporter, alongside `pg_stat_statements` in PostgreSQL.
 
-### Services
+| Component | Location | Details |
+| --------- | -------- | ------- |
+| `postgres-exporter` | Local Docker | `100.64.0.2:9187` (Tailscale only) |
+| Prometheus | VPS (`gatekeeper`) | Scrapes job `pyrite-postgres-exporter` |
+| Grafana | VPS (`gatekeeper`) | Dashboard `postgres-main-overview` |
 
-| Service | URL | Purpose |
-| ------- | --- | ------- |
-| Grafana | <http://localhost:3000> | Dashboards and visualization |
-| Prometheus | <http://localhost:9090> | Metrics collection and storage |
-| postgres_exporter | <http://localhost:9187> | PostgreSQL metrics exporter |
+There is no local Prometheus (`:9090`) or Grafana (`:3000`) service. `docker compose up -d` starts PostgreSQL, `postgres-exporter`, and pgAdmin only.
 
-### Starting the monitoring stack
-
-```bash
-docker compose up -d
-```
-
-All monitoring services start automatically with PostgreSQL.
-
-### Accessing Grafana
-
-1. Open <http://localhost:3000>
-2. Login with:
-   - Username: `admin`
-   - Password: Value of `GRAFANA_ADMIN_PASSWORD` from `.env` (default: `admin`)
-3. The PostgreSQL Overview dashboard is pre-configured
+The exporter must remain reachable from gatekeeper over Tailscale on port 9187 for metrics to keep flowing.
 
 ### Pre-configured dashboard
 
-The PostgreSQL Overview dashboard shows:
+The central Grafana dashboard (`postgres-main-overview`) shows:
 
 - Active and idle connections
 - Cache hit ratio
@@ -594,8 +579,8 @@ tps = 754.012345 (without initial connection time)
 
 ### Monitoring during load tests
 
-1. Open Grafana (<http://localhost:3000>) before starting a test
-2. Watch the PostgreSQL Overview dashboard in real-time
+1. Open the central Grafana dashboard (`postgres-main-overview`) before starting a test
+2. Watch the metrics update in real-time
 3. You'll see connections spike, transaction rates increase, and can identify bottlenecks
 
 ### Custom load test scripts

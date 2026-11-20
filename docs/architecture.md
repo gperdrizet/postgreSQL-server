@@ -12,18 +12,18 @@ flowchart TB
         Students[Students/Clients]
     end
     
-    subgraph VPS["VPS"]
+    subgraph VPS["VPS (gatekeeper)"]
         PublicIP[Public IP :54321]
         NGINX[NGINX Stream Proxy]
         TS_VPS[Tailscale node]
+        PROM[Prometheus<br/>job pyrite-postgres-exporter]
+        GRAF[Grafana<br/>postgres-main-overview]
     end
     
-    subgraph Home["Local Machine"]
+    subgraph Home["Local Machine (pyrite)"]
         TS_Local[Tailscale node]
         subgraph Docker[Docker Compose Stack]
             PG[(PostgreSQL 16<br/>:5432 — SSL)]
-            Prometheus[Prometheus<br/>:9090]
-            Grafana[Grafana<br/>:3000]
             Exporter[postgres_exporter<br/>:9187]
         end
     end
@@ -35,32 +35,37 @@ flowchart TB
     TS_Local --> PG
     
     PG --> Exporter
-    Exporter --> Prometheus
-    Prometheus --> Grafana
+    Exporter -->|"scrape :9187 over Tailscale"| PROM
+    PROM --> GRAF
 ```
 
 ## Docker services
 
+Only PostgreSQL, `postgres-exporter`, and pgAdmin run in Docker on this host. Prometheus and Grafana run on the VPS (`gatekeeper`).
+
 ```mermaid
 flowchart LR
-    subgraph compose[Docker Compose]
+    subgraph compose["Docker Compose - local machine"]
         subgraph data[Data Layer]
             PG[(postgres<br/>PostgreSQL 16)]
         end
         
         subgraph monitoring[Monitoring Layer]
-            EXP[postgres-exporter]
-            PROM[prometheus]
-            GRAF[grafana]
+            EXP[postgres-exporter<br/>:9187]
         end
     end
     
+    subgraph vps["VPS - gatekeeper"]
+        PROM[Prometheus]
+        GRAF[Grafana]
+    end
+
     PG -->|"metrics"| EXP
-    EXP -->|"scrape :9187"| PROM
+    EXP -->|"scrape :9187 over Tailscale"| PROM
     PROM -->|"datasource"| GRAF
     
     EXT_DB[External Clients] -->|":5432 SSL"| PG
-    EXT_GRAF[Browser] -->|":3000"| GRAF
+    EXT_GRAF[Browser] --> GRAF
 ```
 
 ## Data flow
@@ -151,109 +156,43 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph PostgreSQL
-        PG[(Database)]
-        PSS[pg_stat_statements]
-        PSA[pg_stat_activity]
+    subgraph Local["Local Machine (pyrite)"]
+        subgraph PostgreSQL
+            PG[(Database)]
+            PSS[pg_stat_statements]
+            PSA[pg_stat_activity]
+        end
+
+        subgraph Exporter["postgres_exporter :9187"]
+            COLLECT[Collect Metrics]
+        end
     end
     
-    subgraph Exporter[postgres_exporter]
-        COLLECT[Collect Metrics]
-    end
-    
-    subgraph Prometheus
-        SCRAPE[Scrape Targets]
-        STORE[Time Series DB]
-        ALERT[Alerting Rules]
-    end
-    
-    subgraph Grafana
-        DASH[Dashboards]
-        VIS[Visualizations]
+    subgraph VPS["VPS (gatekeeper)"]
+        subgraph Prometheus
+            SCRAPE[Scrape Targets<br/>pyrite-postgres-exporter]
+            STORE[Time Series DB]
+            ALERT[Alerting Rules]
+        end
+
+        subgraph Grafana
+            DASH[Dashboards<br/>postgres-main-overview]
+            VIS[Visualizations]
+        end
     end
     
     PG --> PSS
     PG --> PSA
     PSS --> COLLECT
     PSA --> COLLECT
-    COLLECT --> SCRAPE
+    COLLECT -->|"Tailscale"| SCRAPE
     SCRAPE --> STORE
     STORE --> DASH
     STORE --> ALERT
     DASH --> VIS
 ```
 
-## Viewing these diagrams
-
-These Mermaid diagrams render automatically on:
-- GitHub (README, markdown files)
-- GitLab
-- Notion
-- VS Code (with Mermaid extension)
-
-Or paste into [mermaid.live](https://mermaid.live) to view/edit.
-        string password "auto-generated"
-        int connection_limit "3"
-    }
-    
-    USER_DB {
-        string name "username_db"
-        string owner "student"
-    }
-    
-    SHARED_DB {
-        string name "e.g. distributed_gan"
-        string owner "admin"
-        string access "students role"
-    }
-```
-
-## Backup flow
-
-```mermaid
-flowchart LR
-    PG[(PostgreSQL)] -->|pg_dump| BACKUP[Backup Script]
-    BACKUP -->|gzip| LOCAL[Local Storage]
-    LOCAL -->|rsync| NAS[NAS/RAID]
-    
-    CRON[Cron Job<br/>Daily 2 AM] -->|triggers| BACKUP
-```
-
-## Monitoring stack
-
-```mermaid
-flowchart TB
-    subgraph PostgreSQL
-        PG[(Database)]
-        PSS[pg_stat_statements]
-        PSA[pg_stat_activity]
-    end
-    
-    subgraph Exporter[postgres_exporter]
-        COLLECT[Collect Metrics]
-    end
-    
-    subgraph Prometheus
-        SCRAPE[Scrape Targets]
-        STORE[Time Series DB]
-        ALERT[Alerting Rules]
-    end
-    
-    subgraph Grafana
-        DASH[Dashboards]
-        VIS[Visualizations]
-    end
-    
-    PG --> PSS
-    PG --> PSA
-    PSS --> COLLECT
-    PSA --> COLLECT
-    COLLECT --> SCRAPE
-    SCRAPE --> STORE
-    STORE --> DASH
-    STORE --> ALERT
-    DASH --> VIS
-```
+The local host only exports metrics. Prometheus (job `pyrite-postgres-exporter`) scrapes `100.64.0.2:9187` over Tailscale, and the `postgres-main-overview` dashboard lives in the central Grafana on the VPS. No Prometheus server or Grafana instance runs locally.
 
 ## Viewing these diagrams
 
