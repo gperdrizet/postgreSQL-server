@@ -310,11 +310,13 @@ If students need a collaborative database they can all access:
    ./scripts/backup.sh
    ```
 
-3. Install cron job:
+3. Install the daily 03:00 cron job:
 
    ```bash
    ./scripts/setup-backup-cron.sh
    ```
+
+   The installer reads `BACKUP_DIR` from `.env`, writes its log to `$BACKUP_DIR/backup.log`, and replaces any previous `backup.sh` cron entry (including ones pointing at an old checkout path). The directory must already be writable by the user whose crontab is being edited.
 
 ### Step 8: Test student connection
 

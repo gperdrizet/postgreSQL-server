@@ -14,5 +14,8 @@ data/
 STORAGE.md
 RAID_RECOVERY.md
 
+# Generated backups
+backups/
+
 # Logs
 *.log
