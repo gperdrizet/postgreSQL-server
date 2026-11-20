@@ -43,7 +43,7 @@ check_pgbench() {
         print_error "pgbench not found. Install postgresql-contrib or run tests inside the container."
         echo ""
         echo "To run inside the container:"
-        echo "  docker exec -it student-postgres pgbench ..."
+        echo "  docker exec -it postgres pgbench ..."
         echo ""
         echo "Or install locally:"
         echo "  sudo apt install postgresql-contrib"

@@ -2,7 +2,7 @@
 
 # Configuration - UPDATE THIS PATH
 BACKUP_DIR="/path/to/hdd-raid/postgres-backups"
-DOCKER_CONTAINER="student-postgres"
+DOCKER_CONTAINER="postgres"
 RETENTION_DAYS=30
 DATE=$(date +%Y-%m-%d_%H-%M-%S)
 

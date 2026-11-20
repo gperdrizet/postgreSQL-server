@@ -1,7 +1,7 @@
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: student-postgres
+    container_name: postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: admin
@@ -42,7 +42,7 @@ services:
 
   # DB admin
   pgadmin:
-    image: dpage/pgadmin4:8.14
+    image: dpage/pgadmin4:9.19
     container_name: pgadmin
     restart: unless-stopped
     environment:

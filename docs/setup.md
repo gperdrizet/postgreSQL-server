@@ -153,13 +153,13 @@ Both the local machine and VPS must be joined to the same Tailscale network (tai
 
    ```bash
    docker compose ps
-   docker logs student-postgres
+   docker logs postgres
    ```
 
 3. Test local connection:
 
    ```bash
-   docker exec -it student-postgres psql -U admin -d postgres
+   docker exec -it postgres psql -U admin -d postgres
    ```
 
 ### Step 4: Configure NGINX on VPS
@@ -356,7 +356,7 @@ const pool = new Pool({
 ### View logs
 
 ```bash
-docker logs -f student-postgres
+docker logs -f postgres
 ```
 
 ### Restart database
@@ -374,13 +374,13 @@ docker compose restart
 ### Restore from backup
 
 ```bash
-gunzip -c /path/to/backup.sql.gz | docker exec -i student-postgres psql -U admin
+gunzip -c /path/to/backup.sql.gz | docker exec -i postgres psql -U admin
 ```
 
 ### Reset student password
 
 ```bash
-docker exec -it student-postgres psql -U admin -c "ALTER USER student01 WITH PASSWORD 'new_password';"
+docker exec -it postgres psql -U admin -c "ALTER USER student01 WITH PASSWORD 'new_password';"
 ```
 
 ### Add new student
@@ -390,7 +390,7 @@ The preferred method is adding the username to `credentials/students.txt` and re
 To add a single student manually:
 
 ```bash
-docker exec -it student-postgres psql -U admin <<EOF
+docker exec -it postgres psql -U admin <<EOF
 CREATE USER newuser WITH PASSWORD 'secure_password' CONNECTION LIMIT 3 NOSUPERUSER NOCREATEDB NOCREATEROLE;
 CREATE DATABASE newuser_db OWNER newuser;
 REVOKE ALL ON DATABASE newuser_db FROM PUBLIC;
@@ -513,7 +513,7 @@ sudo apt install postgresql-contrib
 Or run tests inside the container:
 
 ```bash
-docker exec -it student-postgres pgbench ...
+docker exec -it postgres pgbench ...
 ```
 
 ### Using the load test script
@@ -756,10 +756,10 @@ sudo ufw status
 docker compose ps
 
 # Check PostgreSQL logs
-docker logs student-postgres 2>&1 | tail -30
+docker logs postgres 2>&1 | tail -30
 
 # Test local PostgreSQL connection
-docker exec -it student-postgres psql -U admin -d postgres
+docker exec -it postgres psql -U admin -d postgres
 ```
 
 ### Cannot connect to database
@@ -781,7 +781,7 @@ docker exec -it student-postgres psql -U admin -d postgres
 
 1. Check NGINX stream error log: `ssh <your-vps> "sudo tail -20 /var/log/nginx/stream_error.log"`
 2. Test Tailscale connectivity from VPS: `ssh <your-vps> "nc -zv <local-tailscale-ip> 5432"`
-3. Check PostgreSQL logs: `docker logs student-postgres 2>&1 | tail -30`
+3. Check PostgreSQL logs: `docker logs postgres 2>&1 | tail -30`
 4. Verify pg_hba.conf allows connections from Tailscale network (`100.64.0.0/10`)
 
 ### Tailscale connectivity issues
@@ -840,13 +840,13 @@ docker exec -it student-postgres psql -U admin -d postgres
 3. Check if user exists:
 
    ```bash
-   docker exec -it student-postgres psql -U admin -c "\\du"
+   docker exec -it postgres psql -U admin -c "\\du"
    ```
 
 4. Check if database exists:
 
    ```bash
-   docker exec -it student-postgres psql -U admin -c "\\l"
+   docker exec -it postgres psql -U admin -c "\\l"
    ```
 
 ---
