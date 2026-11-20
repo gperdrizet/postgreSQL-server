@@ -2119,10 +2119,11 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>./scripts/backup.sh
 </code></pre></div>
 <ol>
-<li>Install cron job:</li>
+<li>Install the daily 03:00 cron job:</li>
 </ol>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>./scripts/setup-backup-cron.sh
 </code></pre></div>
+<p>The installer reads <code>BACKUP_DIR</code> from <code>.env</code>, writes its log to <code>$BACKUP_DIR/backup.log</code>, and replaces any previous <code>backup.sh</code> cron entry (including ones pointing at an old checkout path). The directory must already be writable by the user whose crontab is being edited.</p>
 <h3 id="step-8-test-student-connection">Step 8: Test student connection<a class="headerlink" href="#step-8-test-student-connection" title="Permanent link">&para;</a></h3>
 <p>From any external machine:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>psql<span class="w"> </span><span class="s2">"host=your-domain.com port=54321 dbname=student01_db user=student01 sslmode=require"</span>
